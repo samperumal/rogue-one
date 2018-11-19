@@ -20,3 +20,11 @@ text.wall {
 text.floor {
     fill: darkslategray;
 }
+
+text.door.close {
+    fill: red;
+}
+
+text.door.open {
+    fill: green;
+}

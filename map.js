@@ -8,20 +8,33 @@ var TILES = {
     ".": "floor"
 };
 
-function Cell(x, y) {
-    this.x = x; // X-coordinate
-    this.y = y; // Y-coordinate
-    this.t = null; // Cell tile symbol
-    this.tt = null; // Cell tile type
-    this.p = false; // Player in cell
-    this.i = null // Item in cell
+class Cell {
+    constructor(x, y) {
+        this.x = x; // X-coordinate
+        this.y = y; // Y-coordinate
+        this.t = null; // Cell tile symbol
+        this.tt = null; // Cell tile type
+        this.p = false; // Player in cell
+        this.i = null; // Item in cell
+    }
+
+    // Display symbol
+    s() {
+        if (this.p)
+            return "@";
+        else if (this.i != null)
+            return this.i.t();
+        else
+            return this.t;
+    }
+
+    css() {
+        if (this.p) return "player";
+        else if (this.i != null) return this.i.tt();
+        else return this.tt;
+    }
 }
 
-Cell.prototype.s = function () {
-    if (this.p) return "@";
-    else if (this.i != null) return this.i;
-    else return this.t;
-}
 
 function parseMap(d) {
     console.log("Parsing");
@@ -37,18 +50,14 @@ function parseMap(d) {
         var x = 0;
         var row = a.map(function (c) {
             var cell = new Cell(x, y);
+            var parseFn = parseDefault;
 
-            if (c == "@") {
-                cell.t = ".";
-                cell.tt = TILES["."];
-                cell.p = true;
-                gameState.player.x = x;
-                gameState.player.y = y;
+            switch (c) {
+                case "@": parseFn = parsePlayer; break;
+                case "+": parseFn = parseDoor; break;
             }
-            else if (TILES[c] != null) {
-                cell.t = c;
-                cell.tt = TILES[c];
-            }
+
+            parseFn(cell, c);
 
             x++;
 
@@ -61,4 +70,34 @@ function parseMap(d) {
 
     // Flatten map for rendering
     gameState.mapArray = gameState.mapData.reduce((a, b) => a.concat(b), []);
+
+    function parsePlayer(cell, c) {
+        parseDefault(cell, ".");
+        cell.p = true;
+        gameState.player.x = cell.x;
+        gameState.player.y = cell.y;
+    }
+
+    function parseDoor(cell, c) {
+        parseDefault(cell, ".");
+        cell.i = new door();
+    }
+
+    function parseDefault(cell, c) {
+        cell.t = c;
+        cell.tt = TILES[c];
+    }
+}
+
+class door {
+    constructor() {
+        this.open = false;
+    }
+
+    t() { return "+"; }
+
+    tt() {
+        if (this.open) return "door open";
+        else return "door close";
+    }
 }

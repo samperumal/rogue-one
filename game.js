@@ -19,8 +19,6 @@ function initialise() {
         mapArray: null,
     };
 
-    // Setup dictionary mapping symbols to css classes
-    initClassMap();
     // Capture display elements drawing/update operations
     gameState.gfx.svg = d3.select("#gfx");
     gameState.gfx.floor = gameState.gfx.svg.append("g").attr("class", "floor");
@@ -66,7 +64,7 @@ function update() {
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
-        .attr("class", d => gfx.colors[d.s()])
+        .attr("class", d => d.css())
         .text(d => d.s());
 }
 
@@ -111,23 +109,20 @@ function requestMove(x, y) {
 }
 
 var possibleDestinations = {
-    ".": moveToEmptySpace,
+    ".": moveToSpace,
+    "+": moveThroughDoor,
 };
 
 // Simplest action function - just move the player to the new cell
-function moveToEmptySpace(currentCell, proposedCell) {
+function moveToSpace(currentCell, proposedCell) {
     currentCell.p = false;
     proposedCell.p = true;
     gameState.player.x = proposedCell.x;
     gameState.player.y = proposedCell.y;
 }
 
-// Create symbol to css class map
-function initClassMap() {
-    var gfx = gameState.gfx;
-    gfx.colors = {
-        "@": "player",
-        "#": "wall",
-        ".": "floor"
-    };
+function moveThroughDoor(currentCell, proposedCell) {
+    var door = proposedCell.i;
+    if (!door.open) door.open = true;
+    else moveToSpace(currentCell, proposedCell);
 }
