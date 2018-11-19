@@ -40,7 +40,7 @@ function initialise() {
         .then(draw)
         .then(update)
         .then(function () {
-            d3.select("#in")
+            d3.select('body')
                 .on("keydown", processInput)
                 .node()
                 .focus();
