@@ -73,10 +73,12 @@ function draw() {
 function update() {
     console.log("Updating map");
     var gfx = gameState.gfx;
+    
+    const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player)
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
-        .attr("class", d => d.css())
+        .attr("class", d => d.css() + (isVisible(d)?"":" hidden"))
         .text(d => d.s());
 
     gfx.gold.text(gameState.player.gold);
