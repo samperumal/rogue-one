@@ -28,3 +28,8 @@ text.door.close {
 text.door.open {
     fill: green;
 }
+
+text.gold {
+    fill: gold;
+    font-weight: bold;
+}

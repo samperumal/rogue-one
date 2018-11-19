@@ -21,3 +21,11 @@ svg {
 #error {
     color: red;
 }
+
+div.info {
+    color: white;
+}
+
+#gold {
+    color: gold;
+}

@@ -5,7 +5,8 @@ function loadMap() {
 // Known tile types
 var TILES = {
     "#": "wall",
-    ".": "floor"
+    ".": "floor",
+    "*": "gold",
 };
 
 class Cell {
@@ -55,6 +56,7 @@ function parseMap(d) {
             switch (c) {
                 case "@": parseFn = parsePlayer; break;
                 case "+": parseFn = parseDoor; break;
+                case "*": parseFn = parseGold; break;
             }
 
             parseFn(cell, c);
@@ -83,6 +85,11 @@ function parseMap(d) {
         cell.i = new door();
     }
 
+    function parseGold(cell, c) {
+        parseDefault(cell, ".");
+        cell.i = new gold();
+    }
+
     function parseDefault(cell, c) {
         cell.t = c;
         cell.tt = TILES[c];
@@ -100,4 +107,10 @@ class door {
         if (this.open) return "door open";
         else return "door close";
     }
+}
+
+class gold {
+    t() { return "*"; }
+
+    tt() { return "gold"; }
 }

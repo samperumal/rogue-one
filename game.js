@@ -11,7 +11,9 @@ function initialise() {
         // Player state
         player: {
             x: 0,
-            y: 0
+            y: 0,
+            gold: 0,
+            health: 5,
         },
         // Map data
         mapData : null,
@@ -22,6 +24,7 @@ function initialise() {
     // Capture display elements drawing/update operations
     gameState.gfx.svg = d3.select("#gfx");
     gameState.gfx.floor = gameState.gfx.svg.append("g").attr("class", "floor");
+    gameState.gfx.gold = d3.select("#gold");
 
     // Call promise chain to load and draw map from file
     loadMap()
@@ -66,6 +69,8 @@ function update() {
     gfx.floor.selectAll("g.cell text")
         .attr("class", d => d.css())
         .text(d => d.s());
+
+    gfx.gold.text(gameState.player.gold);
 }
 
 // Process key input
@@ -111,6 +116,7 @@ function requestMove(x, y) {
 var possibleDestinations = {
     ".": moveToSpace,
     "+": moveThroughDoor,
+    "*": pickupGold,
 };
 
 // Simplest action function - just move the player to the new cell
@@ -125,4 +131,10 @@ function moveThroughDoor(currentCell, proposedCell) {
     var door = proposedCell.i;
     if (!door.open) door.open = true;
     else moveToSpace(currentCell, proposedCell);
+}
+
+function pickupGold(currentCell, proposedCell) {
+    moveToSpace(currentCell, proposedCell);
+    proposedCell.i = null;
+    gameState.player.gold += 1;
 }
