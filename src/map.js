@@ -1,4 +1,6 @@
-function loadMap() {
+import * as d3 from "d3";
+
+export function loadMap() {
     return d3.text("map.txt").then(parseMap);
 }
 

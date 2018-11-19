@@ -1,7 +1,10 @@
+import * as d3 from "d3";
+import { loadMap } from "./map.js"
+
 var gameState = {};
 
 // Called on game startup
-function initialise() {
+export function initialise() {
     // Setup global game state
     gameState = {
         // Display state
