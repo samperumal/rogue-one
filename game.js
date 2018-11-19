@@ -3,7 +3,11 @@ var gameState = {};
 function initialise() {
     gameState = {
         gfx: {
-            cellSize: 25,        
+            cellSize: 25,
+        },
+        player: {
+            x: 0,
+            y: 0
         }
     };
 
@@ -14,7 +18,11 @@ function initialise() {
     loadMap()
         .then(draw)
         .then(update)
-        .then(function() {
+        .then(function () {
+            d3.select("#in")
+                .on("keydown", processInput)
+                .node()
+                .focus();
             console.log("Loaded");
         });
 }
@@ -43,6 +51,51 @@ function update() {
     gfx.floor.selectAll("g.cell text")
         .attr("class", d => gfx.colors[d.s()])
         .text(d => d.s());
+}
+
+function processInput(d) {
+    switch (d3.event.code) {
+        case "KeyW": requestMove(0, -1); break;
+        case "KeyS": requestMove(0, 1); break;
+        case "KeyA": requestMove(-1, 0); break;
+        case "KeyD": requestMove(1, 0); break;
+        default: return;
+    }
+
+    d3.select("#in").property("value", "");
+
+    update();
+}
+
+function requestMove(x, y) {
+    var player = gameState.player;
+    var currentCell = gameState.mapData[player.y][player.x];
+
+    var errorMessage = "Can't move in the requested direction";
+    
+    if (gameState.mapData[player.y + y] != null && gameState.mapData[player.y + y][player.x + x] != null) {
+        var proposedCell = gameState.mapData[player.y + y][player.x + x];
+        
+        var action = possibleDestinations[proposedCell.s()];
+        if (action != null) {
+            console.log("Processing action");
+            action(currentCell, proposedCell);
+            errorMessage = "";
+        }
+    }
+
+    d3.select("#error").text(errorMessage);
+}
+
+var possibleDestinations = {
+    ".": moveToEmptySpace,
+};
+
+function moveToEmptySpace(currentCell, proposedCell) {
+    currentCell.p = false;
+    proposedCell.p = true;
+    gameState.player.x = proposedCell.x;
+    gameState.player.y = proposedCell.y;
 }
 
 function initClassMap() {

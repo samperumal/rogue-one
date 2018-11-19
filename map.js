@@ -36,18 +36,21 @@ function parseMap(d) {
     gameState.mapData = mapText.map(function (a) {
         var x = 0;
         var row = a.map(function (c) {
-            var cell = new Cell(x++, y);
+            var cell = new Cell(x, y);
 
             if (c == "@") {
                 cell.t = ".";
                 cell.tt = TILES["."];
                 cell.p = true;
+                gameState.player.x = x;
+                gameState.player.y = y;
             }
             else if (TILES[c] != null) {
                 cell.t = c;
                 cell.tt = TILES[c];
             }
 
+            x++;
 
             return cell;
         });

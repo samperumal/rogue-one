@@ -1,11 +1,11 @@
 body {
-    margin: 0;
+    margin: 1em;
     background-color: black;
 }
 
 svg {
     border: 1px solid black;    
-    width: 95%;
+    width: 100%;
     height: 500px;
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
@@ -16,4 +16,8 @@ svg {
 
 #in {
     width: 95%;
+}
+
+#error {
+    color: red;
 }
