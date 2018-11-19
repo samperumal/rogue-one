@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+    background-color: black;
+}
+
+svg {
+    border: 1px solid black;    
+    width: 95%;
+    height: 500px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.main-col {
+    text-align: center;
+}
+
+#in {
+    width: 95%;
+}
