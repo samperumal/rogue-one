@@ -7,6 +7,8 @@ function initialise() {
         // Display state
         gfx: {
             cellSize: 25,
+            width: 1200,
+            height: 450
         },
         // Player state
         player: {
@@ -16,15 +18,22 @@ function initialise() {
             health: 5,
         },
         // Map data
-        mapData : null,
+        mapData: null,
         // Convenience copy of above for display
         mapArray: null,
     };
 
     // Capture display elements drawing/update operations
     gameState.gfx.svg = d3.select("#gfx");
-    gameState.gfx.floor = gameState.gfx.svg.append("g").attr("class", "floor");
+    gameState.gfx.content = gameState.gfx.svg.append("g").attr("class", "content");
+    gameState.gfx.floor = gameState.gfx.content.append("g").attr("class", "floor");
     gameState.gfx.gold = d3.select("#gold");
+
+    gameState.gfx.svg
+        .attr("viewBox", "0 0 " + (gameState.gfx.width) + " " + (gameState.gfx.height));
+
+    gameState.gfx.content
+        .attr("transform", "translate(" + (gameState.gfx.width / 2) + "," + (gameState.gfx.height / 2) + ")");
 
     // Call promise chain to load and draw map from file
     loadMap()
@@ -71,6 +80,8 @@ function update() {
         .text(d => d.s());
 
     gfx.gold.text(gameState.player.gold);
+
+    gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
 }
 
 // Process key input
@@ -98,10 +109,10 @@ function requestMove(x, y) {
     info("");
 
     var errorMessage = "Can't move in the requested direction";
-    
+
     if (gameState.mapData[player.y + y] != null && gameState.mapData[player.y + y][player.x + x] != null) {
         var proposedCell = gameState.mapData[player.y + y][player.x + x];
-        
+
         // Find handler for target destination based on it's displayed symbol
         var action = possibleDestinations[proposedCell.s()];
         if (action != null) {
