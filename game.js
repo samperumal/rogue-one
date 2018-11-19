@@ -95,6 +95,8 @@ function requestMove(x, y) {
     var player = gameState.player;
     var currentCell = gameState.mapData[player.y][player.x];
 
+    info("");
+
     var errorMessage = "Can't move in the requested direction";
     
     if (gameState.mapData[player.y + y] != null && gameState.mapData[player.y + y][player.x + x] != null) {
@@ -110,7 +112,16 @@ function requestMove(x, y) {
     }
 
     // Update/clear the error message
-    d3.select("#error").text(errorMessage);
+    if (errorMessage != "")
+        error(errorMessage);
+}
+
+function error(msg) {
+    d3.select("#log").insert("div", ":first-child").attr("class", "error").text(msg);
+}
+
+function info(msg) {
+    d3.select("#log").insert("div", ":first-child").attr("class", "info").text(msg);
 }
 
 var possibleDestinations = {
@@ -129,7 +140,7 @@ function moveToSpace(currentCell, proposedCell) {
 
 function moveThroughDoor(currentCell, proposedCell) {
     var door = proposedCell.i;
-    if (!door.open) door.open = true;
+    if (!door.open) { door.open = true; info("You opened a door."); }
     else moveToSpace(currentCell, proposedCell);
 }
 
@@ -137,4 +148,5 @@ function pickupGold(currentCell, proposedCell) {
     moveToSpace(currentCell, proposedCell);
     proposedCell.i = null;
     gameState.player.gold += 1;
+    info("You picked up gold.");
 }
