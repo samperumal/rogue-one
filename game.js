@@ -88,16 +88,20 @@ function update() {
 // Process key input
 function processInput(d) {
     switch (d3.event.code) {
-        case "KeyW", "ArrowUp":
+        case "KeyW": 
+        case "ArrowUp":
             requestMove(0, -1); 
             break;
-        case "KeyS", "ArrowDown": 
+        case "KeyS":
+        case "ArrowDown": 
             requestMove(0, 1); 
             break;
-        case "KeyA", "ArrowLeft": 
+        case "KeyA":
+        case "ArrowLeft": 
             requestMove(-1, 0); 
             break;
-        case "KeyD", "ArrowRight": 
+        case "KeyD":
+        case "ArrowRight": 
             requestMove(1, 0); 
             break;
         default: return;
