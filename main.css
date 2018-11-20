@@ -24,6 +24,10 @@ div.status {
     overflow-y: auto;
 }
 
+#gold { 
+    color: gold; 
+}
+
 div.error {
     color: red;
 }
