@@ -78,7 +78,8 @@ function update() {
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
-        .attr("class", d => d.css() + (isVisible(d)?"":" hidden"))
+        .attr("class", d => d.css())
+        .classed("hidden", d=>!isVisible(d))
         .text(d => d.s());
 
     gfx.gold.text(gameState.player.gold);
