@@ -10,20 +10,27 @@ svg {
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
-.main-col {
-    text-align: center;
-}
+.main-col { width: 100%; text-align: center; }
 
-div.status {
-    color: white;
-    margin-bottom: 0.5em;
-}
+.gamegrid { width: 80%; float: left; }
+.status-bar { width: 18%; display: inline-block; color: white; }
 
 #log {
+    padding-top: 10px;
     height: 100px;
     overflow-y: auto;
 }
 
+#inventory-heading {
+    font-size: 16pt; 
+    font-weight: bold;
+    padding-bottom: 25px;
+}
+
+#inventory {
+    padding-bottom: 25px;
+}
+ 
 #gold { 
     color: gold; 
 }
