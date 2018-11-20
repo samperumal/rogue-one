@@ -15,6 +15,7 @@ function initialise() {
             x: 0,
             y: 0,
             gold: 0,
+            keys: [],
             health: 5,
         },
         // Map data
@@ -87,15 +88,20 @@ function update() {
 // Process key input
 function processInput(d) {
     switch (d3.event.code) {
-        case "KeyW": requestMove(0, -1); break;
-        case "KeyS": requestMove(0, 1); break;
-        case "KeyA": requestMove(-1, 0); break;
-        case "KeyD": requestMove(1, 0); break;
+        case "KeyW", "ArrowUp":
+            requestMove(0, -1); 
+            break;
+        case "KeyS", "ArrowDown": 
+            requestMove(0, 1); 
+            break;
+        case "KeyA", "ArrowLeft": 
+            requestMove(-1, 0); 
+            break;
+        case "KeyD", "ArrowRight": 
+            requestMove(1, 0); 
+            break;
         default: return;
     }
-
-    // Clear textbox
-    d3.select("#in").property("value", "");
 
     // Redraw map
     update();
@@ -105,8 +111,6 @@ function processInput(d) {
 function requestMove(x, y) {
     var player = gameState.player;
     var currentCell = gameState.mapData[player.y][player.x];
-
-    info("");
 
     var errorMessage = "Can't move in the requested direction";
 
@@ -139,6 +143,7 @@ var possibleDestinations = {
     ".": moveToSpace,
     "+": moveThroughDoor,
     "*": pickupGold,
+    "¬": pickupKey
 };
 
 // Simplest action function - just move the player to the new cell
@@ -151,7 +156,15 @@ function moveToSpace(currentCell, proposedCell) {
 
 function moveThroughDoor(currentCell, proposedCell) {
     var door = proposedCell.i;
-    if (!door.open) { door.open = true; info("You opened a door."); }
+    if (!door.open) {
+        if (gameState.player.keys.includes("masterkey")) {
+            door.open = true; 
+            info("You opened a door.");
+        }
+        else {
+            error("You need a key.");
+        }
+    }
     else moveToSpace(currentCell, proposedCell);
 }
 
@@ -160,4 +173,11 @@ function pickupGold(currentCell, proposedCell) {
     proposedCell.i = null;
     gameState.player.gold += 1;
     info("You picked up gold.");
+}
+
+function pickupKey(currentCell, proposedCell) {
+    moveToSpace(currentCell, proposedCell);
+    proposedCell.i = null;
+    gameState.player.keys.push("masterkey");
+    info("You picked up a key.");
 }
