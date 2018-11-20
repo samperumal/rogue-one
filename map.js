@@ -84,7 +84,7 @@ function parseMap(d) {
 
     function parseDoor(cell, c) {
         parseDefault(cell, ".");
-        cell.i = new door();
+        cell.i = new door("red");
     }
 
     function parseGold(cell, c) {
@@ -94,7 +94,8 @@ function parseMap(d) {
 
     function parseKey(cell, c) {
         parseDefault(cell, ".");
-        cell.i = new key();
+        // TODO(mstankiewicz): Sorry, testing hacks
+        cell.i = new key(cell.x%2 ? "red" : "green");
     }
 
     function parseDefault(cell, c) {
@@ -104,15 +105,15 @@ function parseMap(d) {
 }
 
 class door {
-    constructor() {
+    constructor(colour) {
         this.open = false;
+        this.colour = colour;
     }
 
     t() { return "+"; }
 
     tt() {
-        if (this.open) return "door open";
-        else return "door close";
+        return (this.open) ? "door open" : "door close";
     }
 }
 
@@ -123,7 +124,11 @@ class gold {
 }
 
 class key {
+    constructor(colour) {
+        this.colour = colour;
+    }
+
     t() { return "¬"; }
 
-    tt() { return "key"; }
+    tt() { return this.colour + " key"; }
 }

@@ -15,7 +15,7 @@ function initialise() {
             x: 0,
             y: 0,
             gold: 0,
-            keys: [],
+            items: [],
             health: 5,
         },
         // Map data
@@ -161,12 +161,12 @@ function moveToSpace(currentCell, proposedCell) {
 function moveThroughDoor(currentCell, proposedCell) {
     var door = proposedCell.i;
     if (!door.open) {
-        if (gameState.player.keys.includes("masterkey")) {
+        if (gameState.player.items.includes(door.colour + " key")) {
             door.open = true; 
             info("You opened a door.");
         }
         else {
-            error("You need a key.");
+            error("You need a " + door.colour + " key.");
         }
     }
     else moveToSpace(currentCell, proposedCell);
@@ -181,7 +181,14 @@ function pickupGold(currentCell, proposedCell) {
 
 function pickupKey(currentCell, proposedCell) {
     moveToSpace(currentCell, proposedCell);
-    proposedCell.i = null;
-    gameState.player.keys.push("masterkey");
-    info("You picked up a key.");
+    var newKey = proposedCell.i;
+
+    if (!gameState.player.items.includes(newKey.tt())) {
+        gameState.player.items.push(newKey.tt());
+        info("You picked up a " + newKey.tt());
+        proposedCell.i = null;
+    }
+    else {
+        info("You already have a " + newKey.tt());
+    }
 }
