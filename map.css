@@ -21,11 +21,11 @@ text.floor {
     fill: darkslategray;
 }
 
-text.door.close {
+text.red, text.door.close {
     fill: red;
 }
 
-text.door.open {
+text.green, text.door.open {
     fill: green;
 }
 
