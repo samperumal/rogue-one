@@ -87,15 +87,20 @@ function update() {
 // Process key input
 function processInput(d) {
     switch (d3.event.code) {
-        case "KeyW": requestMove(0, -1); break;
-        case "KeyS": requestMove(0, 1); break;
-        case "KeyA": requestMove(-1, 0); break;
-        case "KeyD": requestMove(1, 0); break;
+        case "KeyW", "ArrowUp":
+            requestMove(0, -1); 
+            break;
+        case "KeyS", "ArrowDown": 
+            requestMove(0, 1); 
+            break;
+        case "KeyA", "ArrowLeft": 
+            requestMove(-1, 0); 
+            break;
+        case "KeyD", "ArrowRight": 
+            requestMove(1, 0); 
+            break;
         default: return;
     }
-
-    // Clear textbox
-    d3.select("#in").property("value", "");
 
     // Redraw map
     update();
@@ -105,8 +110,6 @@ function processInput(d) {
 function requestMove(x, y) {
     var player = gameState.player;
     var currentCell = gameState.mapData[player.y][player.x];
-
-    info("");
 
     var errorMessage = "Can't move in the requested direction";
 
