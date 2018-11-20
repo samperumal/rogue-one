@@ -14,21 +14,18 @@ svg {
     text-align: center;
 }
 
-#in {
-    width: 95%;
-}
-
 div.status {
     color: white;
-}
-
-#gold {
-    color: gold;
+    margin-bottom: 0.5em;
 }
 
 #log {
     height: 100px;
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+
+#gold { 
+    color: gold; 
 }
 
 div.error {

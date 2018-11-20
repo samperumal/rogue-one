@@ -4,10 +4,6 @@ g.cell {
     fill: black;
 }
 
-text {
-    fill: white;
-}
-
 text.player {
     fill: magenta;
     font-weight: bolder;
@@ -17,15 +13,15 @@ text.wall {
     fill: lightslategray;
 }
 
-text.floor {
-    fill: darkslategray;
+text.floor, text.door.open {
+    fill: darkslategray !important;
 }
 
-text.door.close {
+text.red {
     fill: red;
 }
 
-text.door.open {
+text.green {
     fill: green;
 }
 

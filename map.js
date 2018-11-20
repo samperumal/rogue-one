@@ -7,6 +7,7 @@ var TILES = {
     "#": "wall",
     ".": "floor",
     "*": "gold",
+    "¬": "key"
 };
 
 class Cell {
@@ -57,6 +58,7 @@ function parseMap(d) {
                 case "@": parseFn = parsePlayer; break;
                 case "+": parseFn = parseDoor; break;
                 case "*": parseFn = parseGold; break;
+                case "¬": parseFn = parseKey; break;
             }
 
             parseFn(cell, c);
@@ -82,12 +84,18 @@ function parseMap(d) {
 
     function parseDoor(cell, c) {
         parseDefault(cell, ".");
-        cell.i = new door();
+        cell.i = new door(cell.x%2 ? "red" : "green");
     }
 
     function parseGold(cell, c) {
         parseDefault(cell, ".");
         cell.i = new gold();
+    }
+
+    function parseKey(cell, c) {
+        parseDefault(cell, ".");
+        // TODO(mstankiewicz): Sorry, testing hacks
+        cell.i = new key(cell.x%2 ? "red" : "green");
     }
 
     function parseDefault(cell, c) {
@@ -97,15 +105,15 @@ function parseMap(d) {
 }
 
 class door {
-    constructor() {
+    constructor(colour) {
         this.open = false;
+        this.colour = colour;
     }
 
     t() { return "+"; }
 
     tt() {
-        if (this.open) return "door open";
-        else return "door close";
+        return this.colour + " door " + (this.open ? "open" : "closed");
     }
 }
 
@@ -113,4 +121,14 @@ class gold {
     t() { return "*"; }
 
     tt() { return "gold"; }
+}
+
+class key {
+    constructor(colour) {
+        this.colour = colour;
+    }
+
+    t() { return "¬"; }
+
+    tt() { return this.colour + " key"; }
 }
