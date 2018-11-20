@@ -19,9 +19,25 @@ const circleIntersectsLine = line => circle =>
 
 const isObstacle = point =>  point.tt=="wall";
 
+const isBig = isObstacle
+
+// Small objects: test visibility of center point 
+// Large objects: test visibility of closest corner 
+const adjustForSize = line => {
+    if (!isBig(line[1])) return line;
+    const vector = {
+                        x: line[1].x-line[0].x, 
+                        y: line[1].y-line[0].y
+                   }
+    return [line[0], { 
+                        x: line[1].x - Math.sign(vector.x), 
+                        y: line[1].y - Math.sign(vector.y)
+            }]
+}
+
 const lineOfSightTest = world => fromPoint => toPoint =>
 {
-    const line = [fromPoint,toPoint]
+    const line = adjustForSize([fromPoint,toPoint])
     return world
         .filter(isObstacle)
         .filter(v=>v!=fromPoint && v!=toPoint)
