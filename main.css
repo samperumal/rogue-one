@@ -15,11 +15,13 @@ svg {
 }
 
 #in {
-    width: 95%;
+    width: 100%;
+    margin-bottom: 1em;
 }
 
 div.status {
     color: white;
+    margin-bottom: 0.5em;
 }
 
 #gold {
