@@ -30,7 +30,7 @@ div.status {
 
 #log {
     height: 100px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 div.error {

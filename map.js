@@ -7,6 +7,7 @@ var TILES = {
     "#": "wall",
     ".": "floor",
     "*": "gold",
+    "¬": "key"
 };
 
 class Cell {
@@ -57,6 +58,7 @@ function parseMap(d) {
                 case "@": parseFn = parsePlayer; break;
                 case "+": parseFn = parseDoor; break;
                 case "*": parseFn = parseGold; break;
+                case "¬": parseFn = parseKey; break;
             }
 
             parseFn(cell, c);
@@ -90,6 +92,11 @@ function parseMap(d) {
         cell.i = new gold();
     }
 
+    function parseKey(cell, c) {
+        parseDefault(cell, ".");
+        cell.i = new key();
+    }
+
     function parseDefault(cell, c) {
         cell.t = c;
         cell.tt = TILES[c];
@@ -113,4 +120,10 @@ class gold {
     t() { return "*"; }
 
     tt() { return "gold"; }
+}
+
+class key {
+    t() { return "¬"; }
+
+    tt() { return "key"; }
 }
