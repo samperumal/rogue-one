@@ -17,6 +17,9 @@ class Cell {
         this.tt = null; // Cell tile type
         this.p = false; // Player in cell
         this.i = null; // Item in cell
+
+        this.isVisible = false;
+        this.hasBeenSeen = false; 
     }
 
     // Display symbol

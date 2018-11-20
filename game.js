@@ -75,11 +75,14 @@ function update() {
     var gfx = gameState.gfx;
     
     const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player)
+    gameState.mapArray.forEach(v=>v.isVisible=isVisible(v));
+    gameState.mapArray.forEach(v=>v.hasBeenSeen=v.hasBeenSeen || v.isVisible);
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
         .attr("class", d => d.css())
-        .classed("hidden", d=>!isVisible(d))
+        .classed("hidden", d=>!d.isVisible)
+        .classed("hasBeenSeen", d=>d.hasBeenSeen)
         .text(d => d.s());
 
     gfx.gold.text(gameState.player.gold);
