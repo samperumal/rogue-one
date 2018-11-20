@@ -19,10 +19,6 @@ div.status {
     margin-bottom: 0.5em;
 }
 
-#gold {
-    color: gold;
-}
-
 #log {
     height: 100px;
     overflow-y: auto;

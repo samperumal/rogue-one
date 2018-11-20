@@ -84,7 +84,7 @@ function parseMap(d) {
 
     function parseDoor(cell, c) {
         parseDefault(cell, ".");
-        cell.i = new door("red");
+        cell.i = new door(cell.x%2 ? "red" : "green");
     }
 
     function parseGold(cell, c) {
@@ -113,7 +113,7 @@ class door {
     t() { return "+"; }
 
     tt() {
-        return (this.open) ? "door open" : "door close";
+        return this.colour + " door " + (this.open ? "open" : "closed");
     }
 }
 
