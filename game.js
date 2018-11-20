@@ -163,7 +163,7 @@ function moveThroughDoor(currentCell, proposedCell) {
     if (!door.open) {
         if (gameState.player.items.includes(door.colour + " key")) {
             door.open = true; 
-            info("You opened a door.");
+            info("You opened a " + door.colour + " door.");
         }
         else {
             error("You need a " + door.colour + " key.");
