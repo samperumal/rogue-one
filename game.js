@@ -15,6 +15,7 @@ function initialise() {
             x: 0,
             y: 0,
             gold: 0,
+            keys: [],
             health: 5,
         },
         // Map data
@@ -142,6 +143,7 @@ var possibleDestinations = {
     ".": moveToSpace,
     "+": moveThroughDoor,
     "*": pickupGold,
+    "¬": pickupKey
 };
 
 // Simplest action function - just move the player to the new cell
@@ -154,7 +156,15 @@ function moveToSpace(currentCell, proposedCell) {
 
 function moveThroughDoor(currentCell, proposedCell) {
     var door = proposedCell.i;
-    if (!door.open) { door.open = true; info("You opened a door."); }
+    if (!door.open) {
+        if (gameState.player.keys.includes("masterkey")) {
+            door.open = true; 
+            info("You opened a door.");
+        }
+        else {
+            error("You need a key.");
+        }
+    }
     else moveToSpace(currentCell, proposedCell);
 }
 
@@ -163,4 +173,11 @@ function pickupGold(currentCell, proposedCell) {
     proposedCell.i = null;
     gameState.player.gold += 1;
     info("You picked up gold.");
+}
+
+function pickupKey(currentCell, proposedCell) {
+    moveToSpace(currentCell, proposedCell);
+    proposedCell.i = null;
+    gameState.player.keys.push("masterkey");
+    info("You picked up a key.");
 }
