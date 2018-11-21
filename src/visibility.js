@@ -1,3 +1,5 @@
+export { lineOfSightTest };
+
 const dotProduct = ([x1, y1], [x2, y2]) => x1 * x2 + y1 * y2
 
 const circleIntersectsLine = line => circle => {
@@ -34,7 +36,7 @@ const adjustForSize = line => {
     }]
 }
 
-export const lineOfSightTest = world => fromPoint => toPoint => {
+const lineOfSightTest = world => fromPoint => toPoint => {
     const line = adjustForSize([fromPoint, toPoint])
     return world
         .filter(blocksLineOfSight)

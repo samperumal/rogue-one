@@ -82,7 +82,7 @@ function initialise() {
         .attr("transform", "translate(" + (gameState.gfx.width / 2) + "," + (gameState.gfx.height / 2) + ")");
 
     // Call promise chain to load and draw map from file
-    loadMap()
+    loadMap("./map.txt")
         .then(map => {
             gameState = { ...gameState, ...map };
             const playerStart = map.mapArray.find(cell => cell.p);

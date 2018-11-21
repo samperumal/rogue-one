@@ -1,8 +1,8 @@
-// To just import everything from all of d3, use this:
-//import * as d3 from "d3";
+export { loadMap };
 
-export function loadMap() {
-    return d3.text("map.txt").then(parseMap);
+function loadMap(url) {
+    return d3.text(url)
+        .then(parseMap);
 }
 
 // Known tile types
