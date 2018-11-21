@@ -4,7 +4,12 @@
         { "y":10, "x": 21, "open": false, "colour": "red" }
     ],
     "*": [
-        
+        { "x": 5, "y": 3, "quantity": 7},
+        { "x": 21, "y": 5, "quantity": 6},
+        { "x": 23, "y": 11, "quantity": 1},
+        { "x": 25, "y": 13, "quantity": 2},
+        { "x": 28, "y": 15, "quantity": 3},
+        { "x": 30, "y": 12, "quantity": 5}
     ],
     "¬": [
         { "y":13, "x": 31, "colour": "green" },
