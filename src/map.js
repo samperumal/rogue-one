@@ -7,15 +7,6 @@ function loadMap(url) {
         );
 }
 
-// Known tile types
-var TILES = {
-    "#": "wall",
-    ".": "floor",
-    "*": "gold",
-    "¬": "key",
-    "+": "door"
-};
-
 class Cell {
     constructor(x, y) {
         this.x = x; // X-coordinate
@@ -54,6 +45,41 @@ class Cell {
 }
 
 
+class door {
+    constructor() {
+        this.open = false;
+    }
+
+    t() { return "+"; }
+
+    tt() {
+        return this.colour + " door " + (this.open ? "open" : "closed");
+    }
+}
+
+class gold {
+    t() { return "*"; }
+
+    tt() { return "gold"; }
+}
+
+class key {
+    t() { return "¬"; }
+
+    tt() { return this.colour + " key"; }
+}
+
+// Known tile types
+var TILES = {
+    " ": { tt: "rock" },
+    "": { tt: "rock" },
+    "#": { tt: "wall" },
+    ".": { tt: "floor" },
+    "*": { tt: "gold", proto: new gold },
+    "¬": { tt: "key", proto: new key },
+    "+": { tt: "door", proto: new door }
+};
+
 function parseMap(d, itemDefinitions) {
     console.log("Parsing");
 
@@ -77,74 +103,43 @@ function parseMap(d, itemDefinitions) {
     return { mapData, mapArray };
 
 
-// Turn each character into a cell, based on the symbol and accompanying 
-// definition in the json file.
-function parseCell(c, itemDefinitions, x, y) {
-    var cell = new Cell(x, y);
+    // Turn each character into a cell, based on the symbol and accompanying 
+    // definition in the json file.
+    function parseCell(c, itemDefinitions, x, y) {
+        var cell = new Cell(x, y);
 
-    // Override tile symbol for parsing if player
-    if (c == "@") {
-        cell.p = true;
-        c = ".";
-    }
+        // Override tile symbol for parsing if player
+        if (c == "@") {
+            cell.p = true;
+            c = ".";
+        }
 
-    // Attempt to find this cell in item definition metadata
-    else if (itemDefinitions != null && itemDefinitions[c] != null) {
-        for (var i in itemDefinitions[c]) {
-            var item = itemDefinitions[c][i];
-            if (item.x == cell.x && item.y == cell.y) {
-                cell.i = item;
+        // Attempt to find this cell in item definition metadata
+        else if (itemDefinitions != null && itemDefinitions[c] != null) {
+            for (var index in itemDefinitions[c]) {
+                var item = itemDefinitions[c][index];
+                if (item.x == cell.x && item.y == cell.y) {
+                    cell.i = item;
+                }
             }
+
+            if (cell.i == null) {
+                console.log("No definition found: ", cell, c);
+                // Create default if none exists
+                cell.i = {};
+            }
+
+            // Set data object class from TILES dictionary lookup
+            Object.setPrototypeOf(cell.i, TILES[c].proto);
+
+            // Override tile symbol for parsing if known
+            c = ".";
         }
 
-        if (cell.i == null) {
-            console.log("No definition found: ", cell, c);
-            // Create default if none exists
-            cell.i = {};
-        }
+        // Assign symbol and tile type
+        cell.t = c;
+        cell.tt = TILES[c].tt;
 
-        switch (c) {
-            case "+": Object.setPrototypeOf(cell.i, new door); break;
-            case "*": Object.setPrototypeOf(cell.i, new gold); break;
-            case "¬": Object.setPrototypeOf(cell.i, new key); break;
-        }
-
-        // Override tile symbol for parsing if known
-        c = ".";
+        return cell;
     }
-
-    // Assign symbol and tile type
-    cell.t = c;
-    cell.tt = TILES[c];
-
-    return cell;
-}
-}
-class door {
-    constructor() {
-        this.open = false;
-        this.colour = null;
-    }
-
-    t() { return "+"; }
-
-    tt() {
-        return this.colour + " door " + (this.open ? "open" : "closed");
-    }
-}
-
-class gold {
-    t() { return "*"; }
-
-    tt() { return "gold"; }
-}
-
-class key {
-    constructor() {
-        this.colour = null;
-    }
-
-    t() { return "¬"; }
-
-    tt() { return this.colour + " key"; }
 }

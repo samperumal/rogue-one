@@ -1,7 +1,7 @@
 {
     "+": [
-        { "y": 3, "x": 20, "open": false, "locked": true, "colour": "green" },
-        { "y":10, "x": 21, "open": false, "locked": true, "colour": "red" }
+        { "y": 3, "x": 20, "open": false, "colour": "green" },
+        { "y":10, "x": 21, "open": false, "colour": "red" }
     ],
     "*": [
         
