@@ -58,18 +58,16 @@ function parseMap(d) {
         var x = 0;
         var row = a.map(function (c) {
             var cell = new Cell(x, y);
-            var parseFn = parseDefault;
             var object_type = null;
 
             // Maybe can distinguish by player, gold, inventory item, monster, etc?
             switch (c) {
-                case "@": parseFn = parsePlayer; break;
-                case "+": parseFn = parseItem; object_type = door; break;
-                case "¬": parseFn = parseItem; object_type = key; break;
-                case "*": parseFn = parseGold; break;
+                case "@": parsePlayer(cell, c); break;
+                case "+": parseItem(cell, c, door); break;
+                case "¬": parseItem(cell, c, key); break;
+                case "*": parseGold(cell, c); break;
+                default: parseDefault(cell, c);  
             }
-
-            parseFn(cell, c, object_type);
 
             x++;
 
