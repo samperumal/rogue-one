@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import {loadMap, gameState} from "./map.js";
+import {loadMap} from "./map.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     initialise();
@@ -45,6 +45,12 @@ function initialise() {
 
     // Call promise chain to load and draw map from file
     loadMap()
+        .then(map => {
+            gameState = {...gameState, ...map};
+            const playerStart = map.mapArray.find(cell => cell.p);
+            gameState.player.x = playerStart.x;
+            gameState.player.y = playerStart.y;
+        })
         .then(draw)
         .then(update)
         .then(function () {

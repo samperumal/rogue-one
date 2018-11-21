@@ -50,7 +50,7 @@ function parseMap(d) {
     var y = 0;
 
     // Convert strings into cell description objects
-    gameState.mapData = mapText.map(function (a) {
+    const mapData = mapText.map(function (a) {
         var x = 0;
         var row = a.map(function (c) {
             var cell = new Cell(x, y);
@@ -75,13 +75,13 @@ function parseMap(d) {
     });
 
     // Flatten map for rendering
-    gameState.mapArray = gameState.mapData.reduce((a, b) => a.concat(b), []);
+    const mapArray = mapData.reduce((a, b) => a.concat(b), []);
+
+    return {mapData, mapArray};
 
     function parsePlayer(cell, c) {
         parseDefault(cell, ".");
         cell.p = true;
-        gameState.player.x = cell.x;
-        gameState.player.y = cell.y;
     }
 
     function parseDoor(cell, c) {
