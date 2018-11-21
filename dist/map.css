@@ -14,7 +14,7 @@ text.wall {
 }
 
 text.floor, text.door.open {
-    fill: darkslategray !important;
+    fill: darkslategray;
 }
 
 text.red {
