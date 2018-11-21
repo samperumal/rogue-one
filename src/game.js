@@ -2,12 +2,44 @@
 //import * as d3 from "d3";
 import { loadMap } from "./map.js";
 import { lineOfSightTest } from "./visibility.js";
+import { InputStateMachine, Rule } from "./input.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     initialise();
 });
 
 var gameState = {};
+var inputState = new InputStateMachine([
+    new Rule(key => {
+            switch (key) {
+                case "KeyW":
+                case "ArrowUp": return [0, -1];
+                case "KeyS":
+                case "ArrowDown": return [0, 1];
+                case "KeyA":
+                case "ArrowLeft": return [-1, 0];
+                case "KeyD":
+                case "ArrowRight": return [1, 0];
+                default: return false;
+            }
+        },
+        [],
+        coord => requestMove(...coord)
+    ),
+    // TODO(antonburger): Remove; testing guff to demo a multi-key sequence with context
+    new Rule("KeyQ", [
+        new Rule(key => {
+                switch (key) {
+                    case "Digit1": return 1;
+                    case "Digit2": return 2;
+                    case "Digit3": return 3;
+                    default: return false;
+                }
+            },
+            [],
+            context => console.log("Quaffed potion " + context))
+    ])
+]);
 
 // Called on game startup
 function initialise() {
@@ -147,28 +179,15 @@ function updateLOS() {
 
 // Process key input
 function processInput(d) {
-    switch (d3.event.code) {
-        case "KeyW":
-        case "ArrowUp":
-            requestMove(0, -1);
-            break;
-        case "KeyS":
-        case "ArrowDown":
-            requestMove(0, 1);
-            break;
-        case "KeyA":
-        case "ArrowLeft":
-            requestMove(-1, 0);
-            break;
-        case "KeyD":
-        case "ArrowRight":
-            requestMove(1, 0);
-            break;
-        default: return;
+    if (inputState.evaluate(d3.event.code)) {
+        // Redraw map
+        update();
     }
 
-    // Redraw map
-    update();
+    // TODO(antonburger): Remove testing guff
+    if (inputState.current.keySequence.length) {
+        console.log("Pressed " + inputState.current.keySequence.join() + " so far; waiting for more input.");
+    }
 }
 
 // Attempt to move to new cell
