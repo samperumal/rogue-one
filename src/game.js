@@ -195,7 +195,7 @@ function requestMove(x, y) {
     var player = gameState.player;
     var currentCell = gameState.mapData[player.y][player.x];
 
-    var errorMessage = "Can't move in the requested direction";
+    var errorMessage = "";//"Can't move in the requested direction";
 
     if (gameState.mapData[player.y + y] != null && gameState.mapData[player.y + y][player.x + x] != null) {
         var proposedCell = gameState.mapData[player.y + y][player.x + x];
