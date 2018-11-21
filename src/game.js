@@ -31,6 +31,10 @@ function initialise() {
         mapData: null,
         // Convenience copy of above for display
         mapArray: null,
+        settings: {
+            checkLOS: true,
+            displayLOS: true,
+        }
     };
 
     // Capture display elements drawing/update operations
@@ -56,10 +60,26 @@ function initialise() {
         .then(draw)
         .then(update)
         .then(function () {
+            // Attach general key listener
             d3.select('body')
                 .on("keydown", processInput)
                 .node()
                 .focus();
+
+            // Attach EnableLOS listener
+            d3.select("#enableLOS")
+                .on("change", function (d) {
+                    gameState.settings.checkLOS = d3.select(this).property("checked");
+                    update();
+                });
+
+            // Attach DisplayLOS listener
+            d3.select("#displayLOS")
+                .on("change", function (d) {
+                    gameState.settings.displayLOS = d3.select(this).property("checked");
+                    update();
+                });
+
             console.log("Loaded");
         });
 }
@@ -87,23 +107,42 @@ function draw() {
 
 // Update map after actions
 function update() {
-    console.log("Updating map");
-    var gfx = gameState.gfx;
+    console.log("Updating map", gameState.settings.checkLOS);
 
-    const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player)
-    gameState.mapArray.forEach(v => v.isVisible = isVisible(v));
-    gameState.mapArray.forEach(v => v.hasBeenSeen = v.hasBeenSeen || v.isVisible);
+    var gfx = gameState.gfx;
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
         .attr("class", d => d.css())
-        .classed("hidden", d => !d.isVisible)
-        .classed("hasBeenSeen", d => d.hasBeenSeen)
         .text(d => d.s());
+
+    updateLOS();
 
     gfx.gold.text(gameState.player.gold);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
+}
+
+function updateLOS() {
+    // Perform LOS checks and updates
+    if (gameState.settings.checkLOS) {
+        // Calculate visibility between player and every other cell
+        const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player)
+        // Check whether each cell is currently visible
+        // Record change in visibility if never previously seen
+        gameState.mapArray.forEach(v => {
+            v.isVisible = isVisible(v);
+            if (v.hasBeenSeen && v.isVisible)
+                v.hasBeenSeen = true;
+        });
+
+        if (gameState.settings.displayLOS) {
+            // Update 
+            gameState.gfx.floor.selectAll("g.cell text")
+                .classed("hidden", d => !d.isVisible)
+                .classed("hasBeenSeen", d => d.hasBeenSeen);
+        }
+    }
 }
 
 // Process key input
