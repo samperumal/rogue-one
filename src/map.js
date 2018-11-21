@@ -61,7 +61,6 @@ function parseMap(d) {
         var x = 0;
         var row = a.map(function (c) {
             var cell = new Cell(x, y);
-            var object_type = null;
 
             // Maybe can distinguish by player, gold, inventory item, monster, etc?
             switch (c) {
