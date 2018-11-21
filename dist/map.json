@@ -1,0 +1,13 @@
+{
+    "+": [
+        { "y": 3, "x": 20, "open": false, "locked": true, "colour": "green" },
+        { "y":10, "x": 21, "open": false, "locked": true, "colour": "red" }
+    ],
+    "*": [
+        
+    ],
+    "¬": [
+        { "y":13, "x": 31, "colour": "green" },
+        { "y":15, "x": 30, "colour": "red" }
+    ]
+}

@@ -1,8 +1,10 @@
 export { loadMap };
 
 function loadMap(url) {
-    return d3.text(url)
-        .then(parseMap);
+    return d3.text(url + ".txt")
+        .then(mapText =>
+            d3.json(url + ".json").then(mapJson => parseMap(mapText, mapJson))
+        );
 }
 
 // Known tile types
@@ -10,7 +12,8 @@ var TILES = {
     "#": "wall",
     ".": "floor",
     "*": "gold",
-    "¬": "key"
+    "¬": "key",
+    "+": "door"
 };
 
 class Cell {
@@ -23,7 +26,7 @@ class Cell {
         this.i = null; // Item in cell
 
         this.isVisible = false;
-        this.hasBeenSeen = false; 
+        this.hasBeenSeen = false;
     }
 
     // Display symbol
@@ -38,42 +41,32 @@ class Cell {
 
     css() {
         if (this.p) return "player";
-        else if (this.i != null) return this.i.tt();
+        else if (this.i != null) {
+            if (this.i.tt == null) {
+                // Debugging code to show errors on map
+                console.log(this);
+                return "X";
+            }
+            else return this.i.tt();
+        }
         else return this.tt;
     }
 }
 
 
-function parseMap(d) {
+function parseMap(d, itemDefinitions) {
     console.log("Parsing");
+
     // Convert input text into array of arrays of characters (length 1 strings)
     var mapText = d3.dsvFormat("").parseRows(d).map(d => d[0].split('').map(d => d == " " ? "" : d));
-
-    //var maxLen = mapText.reduce((a, b) => Math.max(a, b.length), 0);
 
     var y = 0;
 
     // Convert strings into cell description objects
     const mapData = mapText.map(function (a) {
         var x = 0;
-        var row = a.map(function (c) {
-            var cell = new Cell(x, y);
-            var parseFn = parseDefault;
-
-            switch (c) {
-                case "@": parseFn = parsePlayer; break;
-                case "+": parseFn = parseDoor; break;
-                case "*": parseFn = parseGold; break;
-                case "¬": parseFn = parseKey; break;
-            }
-
-            parseFn(cell, c);
-
-            x++;
-
-            return cell;
-        });
-        y++; 
+        var row = a.map(c => parseCell(c, itemDefinitions, x++, y));
+        y++;
 
         return row;
     });
@@ -81,39 +74,56 @@ function parseMap(d) {
     // Flatten map for rendering
     const mapArray = mapData.reduce((a, b) => a.concat(b), []);
 
-    return {mapData, mapArray};
+    return { mapData, mapArray };
 
-    function parsePlayer(cell, c) {
-        parseDefault(cell, ".");
+
+// Turn each character into a cell, based on the symbol and accompanying 
+// definition in the json file.
+function parseCell(c, itemDefinitions, x, y) {
+    var cell = new Cell(x, y);
+
+    // Override tile symbol for parsing if player
+    if (c == "@") {
         cell.p = true;
+        c = ".";
     }
 
-    function parseDoor(cell, c) {
-        parseDefault(cell, ".");
-        cell.i = new door(cell.x%2 ? "red" : "green");
+    // Attempt to find this cell in item definition metadata
+    else if (itemDefinitions != null && itemDefinitions[c] != null) {
+        for (var i in itemDefinitions[c]) {
+            var item = itemDefinitions[c][i];
+            if (item.x == cell.x && item.y == cell.y) {
+                cell.i = item;
+            }
+        }
+
+        if (cell.i == null) {
+            console.log("No definition found: ", cell, c);
+            // Create default if none exists
+            cell.i = {};
+        }
+
+        switch (c) {
+            case "+": Object.setPrototypeOf(cell.i, new door); break;
+            case "*": Object.setPrototypeOf(cell.i, new gold); break;
+            case "¬": Object.setPrototypeOf(cell.i, new key); break;
+        }
+
+        // Override tile symbol for parsing if known
+        c = ".";
     }
 
-    function parseGold(cell, c) {
-        parseDefault(cell, ".");
-        cell.i = new gold();
-    }
+    // Assign symbol and tile type
+    cell.t = c;
+    cell.tt = TILES[c];
 
-    function parseKey(cell, c) {
-        parseDefault(cell, ".");
-        // TODO(mstankiewicz): Sorry, testing hacks
-        cell.i = new key(cell.x%2 ? "red" : "green");
-    }
-
-    function parseDefault(cell, c) {
-        cell.t = c;
-        cell.tt = TILES[c];
-    }
+    return cell;
 }
-
+}
 class door {
-    constructor(colour) {
+    constructor() {
         this.open = false;
-        this.colour = colour;
+        this.colour = null;
     }
 
     t() { return "+"; }
@@ -130,8 +140,8 @@ class gold {
 }
 
 class key {
-    constructor(colour) {
-        this.colour = colour;
+    constructor() {
+        this.colour = null;
     }
 
     t() { return "¬"; }
