@@ -1,6 +1,7 @@
 // To just import everything from all of d3, use this:
 import * as d3 from "d3";
 import { loadMap } from "./map.js";
+import { lineOfSightTest } from "./visibility.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     initialise();
