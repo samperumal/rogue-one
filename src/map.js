@@ -1,5 +1,5 @@
 // To just import everything from all of d3, use this:
-import * as d3 from "d3";
+//import * as d3 from "d3";
 
 export function loadMap() {
     return d3.text("map.txt").then(parseMap);
@@ -73,7 +73,7 @@ function parseMap(d) {
 
             return cell;
         });
-        y++;
+        y++; 
 
         return row;
     });

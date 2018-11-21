@@ -10,8 +10,5 @@ module.exports = {
         removeAvailableModules: false,
         removeEmptyChunks: false,
         splitChunks: false,
-    },
-    module: {
-        noParse: /d3/,
-      }
+    }
 };
