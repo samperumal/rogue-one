@@ -29,6 +29,23 @@
                 "showReuseMessage": true
             },
             "group": "build",
+        },
+        {
+            "label": "Start Dev Server",
+            "type": "shell",
+            "command": "python -m http.server 8080",
+            "options": {
+                "cwd": "dist"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false
+            },
+            "group": "none",
+            "isBackground": true
         }
     ]
 }
