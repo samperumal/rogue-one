@@ -1,39 +1,45 @@
-g.cell {
-    text-anchor: middle;
-    dominant-baseline: central;
-    fill: black;
+body {
+    margin: 1em;
+    background-color: black;
 }
 
-text.player {
-    fill: magenta;
-    font-weight: bolder;
+svg {
+    border: 1px solid white;    
+    width: 100%;
+    height: 450px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
-text.wall {
-    fill: lightslategray;
+.main-col { width: 100%; text-align: center; }
+
+.gamegrid { width: 80%; float: left; }
+.status-bar { width: 18%; display: inline-block; color: white; }
+
+#log {
+    padding-top: 10px;
+    height: 100px;
+    overflow-y: auto;
 }
 
-text.floor, text.door.open {
-    fill: darkslategray;
-}
-
-text.red {
-    fill: red;
-}
-
-text.green {
-    fill: green;
-}
-
-text.gold {
-    fill: gold;
+#inventory-heading {
+    font-size: 16pt; 
     font-weight: bold;
+    padding-bottom: 25px;
 }
 
-text.hidden {
-   fill:black;
+#inventory {
+    padding-bottom: 25px;
+}
+ 
+#gold { 
+    color: gold; 
 }
 
-text.hidden.hasBeenSeen.wall {
-   fill:#333333;
+div.error {
+    color: red;
 }
+
+div.info {
+    color: lightgray;
+}
+
