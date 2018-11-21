@@ -11,31 +11,31 @@ document.addEventListener("DOMContentLoaded", function () {
 var gameState = {};
 var inputState = new InputStateMachine([
     new Rule(key => {
-            switch (key) {
-                case "KeyW":
-                case "ArrowUp": return [0, -1];
-                case "KeyS":
-                case "ArrowDown": return [0, 1];
-                case "KeyA":
-                case "ArrowLeft": return [-1, 0];
-                case "KeyD":
-                case "ArrowRight": return [1, 0];
-                default: return false;
-            }
-        },
+        switch (key) {
+            case "KeyW":
+            case "ArrowUp": return [0, -1];
+            case "KeyS":
+            case "ArrowDown": return [0, 1];
+            case "KeyA":
+            case "ArrowLeft": return [-1, 0];
+            case "KeyD":
+            case "ArrowRight": return [1, 0];
+            default: return false;
+        }
+    },
         [],
         coord => requestMove(...coord)
     ),
     // TODO(antonburger): Remove; testing guff to demo a multi-key sequence with context
     new Rule("KeyQ", [
         new Rule(key => {
-                switch (key) {
-                    case "Digit1": return 1;
-                    case "Digit2": return 2;
-                    case "Digit3": return 3;
-                    default: return false;
-                }
-            },
+            switch (key) {
+                case "Digit1": return 1;
+                case "Digit2": return 2;
+                case "Digit3": return 3;
+                default: return false;
+            }
+        },
             [],
             context => console.log("Quaffed potion " + context))
     ])
@@ -64,7 +64,7 @@ function initialise() {
         // Convenience copy of above for display
         mapArray: null,
         settings: {
-            checkLOS: true,
+            checkLOS: false,
             displayLOS: true,
         }
     };
@@ -139,8 +139,6 @@ function draw() {
 
 // Update map after actions
 function update() {
-    console.log("Updating map", gameState.settings.checkLOS);
-
     var gfx = gameState.gfx;
 
     // Update cell css class and text symbol
@@ -259,9 +257,15 @@ function moveThroughDoor(currentCell, proposedCell) {
 
 function pickupGold(currentCell, proposedCell) {
     moveToSpace(currentCell, proposedCell);
-    proposedCell.i = null;
-    gameState.player.gold += 1;
-    info("You picked up gold.");
+    if (proposedCell.i != null && proposedCell.i.quantity > 0) {
+        gameState.player.gold += proposedCell.i.quantity;
+        //info("You picked up " + proposedCell.i.quantity + " gold");
+        var msg = d3.select("#log").insert("div", ":first-child").attr("class", "info");
+        msg.append("span").text("You picked up ");
+        msg.append("span").attr("class", "gold").text(proposedCell.i.quantity);
+        msg.append("span").text(" gold");
+        proposedCell.i = null;
+    }
 }
 
 function pickupKey(currentCell, proposedCell) {
