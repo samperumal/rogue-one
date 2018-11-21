@@ -1,5 +1,10 @@
-function loadMap() {
-    return d3.text("map.txt").then(parseMap);
+// To just import everything from all of d3, use this:
+// import * as d3 from "d3";
+import { text as d3_text } from "d3-fetch";
+import { dsvFormat as d3_dsvFormat } from "d3-dsv";
+
+export function loadMap() {
+    return d3_text("map.txt").then(parseMap);
 }
 
 // Known tile types
@@ -41,14 +46,14 @@ class Cell {
 function parseMap(d) {
     console.log("Parsing");
     // Convert input text into array of arrays of characters (length 1 strings)
-    var mapText = d3.dsvFormat("").parseRows(d).map(d => d[0].split('').map(d => d == " " ? "" : d));
+    var mapText = d3_dsvFormat("").parseRows(d).map(d => d[0].split('').map(d => d == " " ? "" : d));
 
     //var maxLen = mapText.reduce((a, b) => Math.max(a, b.length), 0);
 
     var y = 0;
 
     // Convert strings into cell description objects
-    gameState.mapData = mapText.map(function (a) {
+    const mapData = mapText.map(function (a) {
         var x = 0;
         var row = a.map(function (c) {
             var cell = new Cell(x, y);
@@ -73,13 +78,13 @@ function parseMap(d) {
     });
 
     // Flatten map for rendering
-    gameState.mapArray = gameState.mapData.reduce((a, b) => a.concat(b), []);
+    const mapArray = mapData.reduce((a, b) => a.concat(b), []);
+
+    return {mapData, mapArray};
 
     function parsePlayer(cell, c) {
         parseDefault(cell, ".");
         cell.p = true;
-        gameState.player.x = cell.x;
-        gameState.player.y = cell.y;
     }
 
     function parseDoor(cell, c) {
