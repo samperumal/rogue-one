@@ -48,7 +48,7 @@ function initialise() {
     // Call promise chain to load and draw map from file
     loadMap()
         .then(map => {
-            gameState = {...gameState, ...map};
+            gameState = { ...gameState, ...map };
             const playerStart = map.mapArray.find(cell => cell.p);
             gameState.player.x = playerStart.x;
             gameState.player.y = playerStart.y;
@@ -89,13 +89,16 @@ function draw() {
 function update() {
     console.log("Updating map");
     var gfx = gameState.gfx;
-    
-    const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player);
+
+    const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player)
+    gameState.mapArray.forEach(v => v.isVisible = isVisible(v));
+    gameState.mapArray.forEach(v => v.hasBeenSeen = v.hasBeenSeen || v.isVisible);
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
         .attr("class", d => d.css())
-        .classed("hidden", d=>!isVisible(d))
+        .classed("hidden", d => !d.isVisible)
+        .classed("hasBeenSeen", d => d.hasBeenSeen)
         .text(d => d.s());
 
     gfx.gold.text(gameState.player.gold);
@@ -106,21 +109,21 @@ function update() {
 // Process key input
 function processInput(d) {
     switch (d3.event.code) {
-        case "KeyW": 
+        case "KeyW":
         case "ArrowUp":
-            requestMove(0, -1); 
+            requestMove(0, -1);
             break;
         case "KeyS":
-        case "ArrowDown": 
-            requestMove(0, 1); 
+        case "ArrowDown":
+            requestMove(0, 1);
             break;
         case "KeyA":
-        case "ArrowLeft": 
-            requestMove(-1, 0); 
+        case "ArrowLeft":
+            requestMove(-1, 0);
             break;
         case "KeyD":
-        case "ArrowRight": 
-            requestMove(1, 0); 
+        case "ArrowRight":
+            requestMove(1, 0);
             break;
         default: return;
     }
@@ -186,7 +189,7 @@ function moveThroughDoor(currentCell, proposedCell) {
     var door = proposedCell.i;
     if (!door.open) {
         if (gameState.player.items.includes(door.colour + " key")) {
-            door.open = true; 
+            door.open = true;
             info("You opened a " + door.colour + " door.");
         }
         else {
