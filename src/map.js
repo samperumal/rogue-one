@@ -65,7 +65,7 @@ class key {
 }
 
 class potion {
-    t() { return "¬"; }
+    t() { return "õ"; }
     tt() { return this.colour + " potion"; }
 }
 
