@@ -1,6 +1,7 @@
 // To just import everything from all of d3, use this:
 import * as d3 from "d3";
 import { loadMap } from "./map.js";
+import { lineOfSightTest } from "./visibility.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     initialise();
@@ -88,10 +89,13 @@ function draw() {
 function update() {
     console.log("Updating map");
     var gfx = gameState.gfx;
+    
+    const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player);
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
         .attr("class", d => d.css())
+        .classed("hidden", d=>!isVisible(d))
         .text(d => d.s());
 
     gfx.gold.text(gameState.player.gold);

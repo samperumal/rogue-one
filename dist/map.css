@@ -29,3 +29,11 @@ text.gold {
     fill: gold;
     font-weight: bold;
 }
+
+text.hidden {
+   fill:black;
+}
+
+text.hidden.wall {
+   fill:#333333;
+}
