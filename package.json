@@ -5,7 +5,8 @@
   "private": true,
   "main": "./src/game.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "webpack-dev": "webpack --mode development",
+    "webpack-prod": "webpack --mode production"
   },
   "repository": {
     "type": "git",
