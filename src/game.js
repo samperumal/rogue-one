@@ -1,7 +1,6 @@
 // To just import everything from all of d3, use this:
-// import * as d3 from "d3";
-import { select as d3_select, event as d3_event } from "d3-selection";
-import {loadMap} from "./map.js";
+import * as d3 from "d3";
+import { loadMap } from "./map.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     initialise();
@@ -34,10 +33,10 @@ function initialise() {
     };
 
     // Capture display elements drawing/update operations
-    gameState.gfx.svg = d3_select("#gfx");
+    gameState.gfx.svg = d3.select("#gfx");
     gameState.gfx.content = gameState.gfx.svg.append("g").attr("class", "content");
     gameState.gfx.floor = gameState.gfx.content.append("g").attr("class", "floor");
-    gameState.gfx.gold = d3_select("#gold");
+    gameState.gfx.gold = d3.select("#gold");
 
     gameState.gfx.svg
         .attr("viewBox", "0 0 " + (gameState.gfx.width) + " " + (gameState.gfx.height));
@@ -56,7 +55,7 @@ function initialise() {
         .then(draw)
         .then(update)
         .then(function () {
-            d3_select('body')
+            d3.select('body')
                 .on("keydown", processInput)
                 .node()
                 .focus();
@@ -102,7 +101,7 @@ function update() {
 
 // Process key input
 function processInput(d) {
-    switch (d3_event.code) {
+    switch (d3.event.code) {
         case "KeyW": 
         case "ArrowUp":
             requestMove(0, -1); 
@@ -151,11 +150,11 @@ function requestMove(x, y) {
 }
 
 function error(msg) {
-    d3_select("#log").insert("div", ":first-child").attr("class", "error").text(msg);
+    d3.select("#log").insert("div", ":first-child").attr("class", "error").text(msg);
 }
 
 function info(msg) {
-    d3_select("#log").insert("div", ":first-child").attr("class", "info").text(msg);
+    d3.select("#log").insert("div", ":first-child").attr("class", "info").text(msg);
 }
 
 function update_inventory(item) {

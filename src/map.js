@@ -1,10 +1,8 @@
 // To just import everything from all of d3, use this:
-// import * as d3 from "d3";
-import { text as d3_text } from "d3-fetch";
-import { dsvFormat as d3_dsvFormat } from "d3-dsv";
+import * as d3 from "d3";
 
 export function loadMap() {
-    return d3_text("map.txt").then(parseMap);
+    return d3.text("map.txt").then(parseMap);
 }
 
 // Known tile types
@@ -46,7 +44,7 @@ class Cell {
 function parseMap(d) {
     console.log("Parsing");
     // Convert input text into array of arrays of characters (length 1 strings)
-    var mapText = d3_dsvFormat("").parseRows(d).map(d => d[0].split('').map(d => d == " " ? "" : d));
+    var mapText = d3.dsvFormat("").parseRows(d).map(d => d[0].split('').map(d => d == " " ? "" : d));
 
     //var maxLen = mapText.reduce((a, b) => Math.max(a, b.length), 0);
 
