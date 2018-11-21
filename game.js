@@ -143,6 +143,12 @@ function info(msg) {
     d3.select("#log").insert("div", ":first-child").attr("class", "info").text(msg);
 }
 
+function update_inventory(item) {
+    gameState.player.items.push(item);
+    d3.select("#inventory").append("div", ":last-child").attr("class", "info").text(item);
+    info("You picked up a " + item);
+}
+
 var possibleDestinations = {
     ".": moveToSpace,
     "+": moveThroughDoor,
@@ -184,8 +190,7 @@ function pickupKey(currentCell, proposedCell) {
     var newKey = proposedCell.i;
 
     if (!gameState.player.items.includes(newKey.tt())) {
-        gameState.player.items.push(newKey.tt());
-        info("You picked up a " + newKey.tt());
+        update_inventory(newKey.tt());
         proposedCell.i = null;
     }
     else {

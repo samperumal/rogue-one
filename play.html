@@ -14,17 +14,18 @@
 </head>
 
 <body>
-    <div class="main-col status">
-        <span>Gold: </span><span id="gold">0</span>
+    <div class="main-col" style="width:100%">
+        <div class="game-grid"style="width:80%; float: left">
+            <svg id="gfx" preserveAspectRatio="xMidYMid"/>
+        </div>
+        <div class="status-bar">
+            <div id="inventory-heading">Inventory</div>
+            <div id="inventory"></div>
+            Gold: <text id="gold">0</text>
+        </div>        
     </div>
-    <div class="main-col">
-        <svg id="gfx" preserveAspectRatio="xMidYMid">
 
-        </svg>
-    </div>
-    <div class="main-col" id="log">
-        <span id="error"></span><span id="info"></span>
-    </div>
+    <div class="main-col" id="log" />
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             initialise();
