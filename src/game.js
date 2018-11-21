@@ -232,7 +232,10 @@ var possibleDestinations = {
     ".": moveToSpace,
     "+": moveThroughDoor,
     "*": pickupGold,
-    "¬": pickupKey
+    "¬": pickupItem,
+    "/": pickupItem,
+    "▾": pickupItem,
+    "õ": pickupItem
 };
 
 // Simplest action function - just move the player to the new cell
@@ -264,15 +267,15 @@ function pickupGold(currentCell, proposedCell) {
     info("You picked up gold.");
 }
 
-function pickupKey(currentCell, proposedCell) {
+function pickupItem(currentCell, proposedCell) {
     moveToSpace(currentCell, proposedCell);
-    var newKey = proposedCell.i;
+    var newItem = proposedCell.i;
 
-    if (!gameState.player.items.includes(newKey.tt())) {
-        update_inventory(newKey.tt());
+    if (!gameState.player.items.includes(newItem.tt())) {
+        update_inventory(newItem.tt());
         proposedCell.i = null;
     }
     else {
-        info("You already have a " + newKey.tt());
+        info("You already have a " + newItem.tt());
     }
 }

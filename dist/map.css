@@ -30,6 +30,11 @@ text.gold {
     font-weight: bold;
 }
 
+/* Default weapons and armor to white? */
+text.armour, text.weapon {
+    fill: white;
+}
+
 text.hidden {
    visibility: hidden;
 }

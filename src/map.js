@@ -51,22 +51,31 @@ class door {
     }
 
     t() { return "+"; }
-
-    tt() {
-        return this.colour + " door " + (this.open ? "open" : "closed");
-    }
+    tt() { return this.colour + " door " + (this.open ? "open" : "closed"); }
 }
 
 class gold {
     t() { return "*"; }
-
     tt() { return "gold"; }
 }
 
 class key {
     t() { return "¬"; }
-
     tt() { return this.colour + " key"; }
+}
+
+class potion {
+    t() { return "¬"; }
+    tt() { return this.colour + " potion"; }
+}
+
+class weapon {
+    t() { return "/"; }
+    tt() { return "weapon"; }
+}
+ class armour {
+    t() { return "▾"; }
+    tt() { return "armour"; }
 }
 
 // Known tile types
@@ -77,7 +86,10 @@ var TILES = {
     ".": { tt: "floor" },
     "*": { tt: "gold", proto: new gold },
     "¬": { tt: "key", proto: new key },
-    "+": { tt: "door", proto: new door }
+    "õ": { tt: "potion", proto: new potion },
+    "▾": { tt: "armour", proto: new armour },
+    "/": { tt: "weapon", proto: new weapon },
+    "+": { tt: "door", proto: new door },
 };
 
 function parseMap(d, itemDefinitions) {
