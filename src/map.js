@@ -10,7 +10,10 @@ var TILES = {
     "#": "wall",
     ".": "floor",
     "*": "gold",
-    "¬": "key"
+    "¬": "key",
+    "õ": "potion",
+    "▾": "armour",
+    "/": "weapon"
 };
 
 class Cell {
@@ -65,6 +68,9 @@ function parseMap(d) {
                 case "@": parsePlayer(cell, c); break;
                 case "+": parseItem(cell, c, door); break;
                 case "¬": parseItem(cell, c, key); break;
+                case "õ": parseItem(cell, c, potion); break;
+                case "/": parseItem(cell, c, weapon); break;
+                case "▾": parseItem(cell, c, armour); break;
                 case "*": parseGold(cell, c); break;
                 default: parseDefault(cell, c);  
             }
@@ -105,6 +111,12 @@ function parseMap(d) {
     }
 }
 
+
+class gold {
+    t() { return "*"; }
+    tt() { return "gold"; }
+}
+
 class door {
     constructor(colour) {
         this.open = false;
@@ -112,16 +124,7 @@ class door {
     }
 
     t() { return "+"; }
-
-    tt() {
-        return this.colour + " door " + (this.open ? "open" : "closed");
-    }
-}
-
-class gold {
-    t() { return "*"; }
-
-    tt() { return "gold"; }
+    tt() { return this.colour + " door " + (this.open ? "open" : "closed"); }
 }
 
 class key {
@@ -130,6 +133,24 @@ class key {
     }
 
     t() { return "¬"; }
-
     tt() { return this.colour + " key"; }
+}
+
+class potion {
+    constructor(colour) {
+        this.colour = colour;
+    }
+
+    t() { return "õ"; }
+    tt() { return this.colour + " potion"; }
+}
+
+class weapon {
+    t() { return "/"; }
+    tt() { return "weapon"; }
+}
+
+class armour {
+    t() { return "▾"; }
+    tt() { return "armour"; }
 }
