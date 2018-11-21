@@ -1,0 +1,39 @@
+g.cell {
+    text-anchor: middle;
+    dominant-baseline: central;
+    fill: black;
+}
+
+text.player {
+    fill: magenta;
+    font-weight: bolder;
+}
+
+text.wall {
+    fill: lightslategray;
+}
+
+text.floor, text.door.open {
+    fill: darkslategray !important;
+}
+
+text.red {
+    fill: red;
+}
+
+text.green {
+    fill: green;
+}
+
+text.gold {
+    fill: gold;
+    font-weight: bold;
+}
+
+text.hidden {
+   fill:black;
+}
+
+text.hidden.hasBeenSeen.wall {
+   fill:#333333;
+}
