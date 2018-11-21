@@ -164,7 +164,7 @@ function updateLOS() {
         // Record change in visibility if never previously seen
         gameState.mapArray.forEach(v => {
             v.isVisible = isVisible(v);
-            if (v.hasBeenSeen && v.isVisible)
+            if (!v.hasBeenSeen && v.isVisible)
                 v.hasBeenSeen = true;
         });
 
