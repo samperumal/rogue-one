@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="edit.css" />
+    <script defer src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="../src/map.js" type="module"></script>
+</head>
+
+<body>
+    <div class="main-col" style="width:100%">
+        <div class="game-grid" style="width:80%; float: left">
+            <svg id="gfx" preserveAspectRatio="xMidYMid"></svg>
+        </div>
+
+        <div class="status-bar">
+            <div>
+                <h3>Settings</h3>
+                <div class="dim">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><label for="width">Width: </label></td>
+                                <td><input type="number" id="width" value="20" /></td>
+                            </tr>
+                            <tr>
+                                <td><label for="height">Height: </label></td>
+                                <td><input type="number" id="height" value="20" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>var editorGlobal = {};</script>
+    <script type="module">
+        import { editor } from "../src/editor.js";
+        document.addEventListener("DOMContentLoaded", function () {
+            editorGlobal = new editor();
+            editorGlobal.initialise();
+        });
+    </script>
+</body>
+
+</html>

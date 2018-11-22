@@ -1,4 +1,4 @@
-export { loadMap };
+export { loadMap, Cell, TILES };
 
 async function loadMap(url) {
     const downloads = [d3.text(url + ".txt"), d3.json(url + ".json")];
@@ -78,7 +78,7 @@ class weapon {
 }
 
 // Known tile types
-var TILES = {
+const TILES = {
     " ": { tt: "rock" },
     "": { tt: "rock" },
     "#": { tt: "wall" },
@@ -127,7 +127,7 @@ function parseMap(d, itemDefinitions) {
 
         // Attempt to find this cell in item definition metadata
         else if (itemDefinitions != null && itemDefinitions[c] != null) {
-            for (let item of itemDefinitions[c]) {
+            for (const item of itemDefinitions[c]) {
                 if (item.x == cell.x && item.y == cell.y) {
                     cell.i = item;
                 }
