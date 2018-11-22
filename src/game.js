@@ -155,8 +155,15 @@ function update() {
         .attr("class", d => d.css())
         .text(d => d.s());
 
-    updateLOS();
+    if (gameState.settings.checkLOS) {
+        updateLOS();
+    }
 
+    if (gameState.settings.displayLOS) {
+        gameState.gfx.floor.selectAll("g.cell text")
+            .classed("hidden", d => !d.isVisible)
+            .classed("hasBeenSeen", d => d.hasBeenSeen);
+    }
 
     gfx.gold.text(gameState.player.gold);
 
@@ -165,34 +172,24 @@ function update() {
 
 const stepDistanceBetween = (sourcePoint, destinationPoint) => Math.abs(destinationPoint.x - sourcePoint.x) + Math.abs(destinationPoint.y - sourcePoint.y);
 
+// Perform LOS checks and updates
 function updateLOS() {
-    // Perform LOS checks and updates
-    if (gameState.settings.checkLOS) {
-        // Clear stale state
-        gameState.mapArray.forEach(v => v.isVisible = false);
+    // Clear stale state
+    gameState.mapArray.forEach(v => v.isVisible = false);
 
-        // We only need to consider objects within the visual range
-        const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.settings.visualRange);
+    // We only need to consider objects within the visual range
+    const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.settings.visualRange);
 
-        // isVisible means there is line of sight to the player
-        const isVisible = lineOfSightTest(objectsInRange)(gameState.player)
+    // isVisible means there is line of sight to the player
+    const isVisible = lineOfSightTest(objectsInRange)(gameState.player)
 
-        // Check whether each cell is currently visible
-        // Record change in visibility if never previously seen
-        objectsInRange.forEach(v => {
-            v.isVisible = isVisible(v);
-            if (!v.hasBeenSeen && v.isVisible)
-                v.hasBeenSeen = true;
-        });
-
-        if (gameState.settings.displayLOS) {
-            // Update 
-            gameState.gfx.floor.selectAll("g.cell text")
-                .classed("hidden", d => !d.isVisible)
-                .classed("hasBeenSeen", d => d.hasBeenSeen);
-        }
-
-    }
+    // Check whether each cell is currently visible
+    // Record change in visibility if never previously seen
+    objectsInRange.forEach(v => {
+        v.isVisible = isVisible(v);
+        if (!v.hasBeenSeen && v.isVisible)
+            v.hasBeenSeen = true;
+    });
 }
 
 // Process key input
