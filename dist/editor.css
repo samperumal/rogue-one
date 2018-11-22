@@ -3,6 +3,11 @@
     text-align: left;
 }
 
+#tile {
+    width: 100%;
+    margin: 1em;
+}
+
 .dim table {
     width: auto;
     margin: auto;

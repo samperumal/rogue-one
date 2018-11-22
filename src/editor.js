@@ -18,6 +18,16 @@ class editor {
         this.gfx.pan = this.gfx.svg.append("g").attr("class", "pan");
         this.gfx.grid = this.gfx.pan.append("g").attr("class", "grid");
 
+        d3.select("#tile")
+            .selectAll("option")
+            .data(Object.entries(TILES).filter(d => d[0] != "" && d[0] != " "))
+            .enter()
+            .append("option")
+            .attr("value", d => d[0])
+            .text(d => d[0] + " [" + d[1].tt + "]");
+
+        console.log(Object.entries(TILES));
+
         this.createGrid();
 
         this.updateGrid();
@@ -45,7 +55,7 @@ class editor {
 
     drawGrid() {
         const cellSize = this.gfx.cellSize;
-        const margin = 2;
+        const margin = 0;
 
         // Clear all existing groups
         this.gfx.grid.selectAll("g.cell").remove();
@@ -53,16 +63,14 @@ class editor {
         const cells = this.gfx.grid.selectAll("g.cell")
             .data(this.mapArray);
 
-        // Necessary to maintain parent reference across events
-        const obj = this;
-
         // Create new groups and populate with contents
         const newCells = cells.enter()
             .append("g")
             .attr("class", "cell")
-            .attr("transform", d => "translate(" + (d.x * cellSize) + "," + (d.y * cellSize) + ")")            
+            .attr("transform", d => "translate(" + (d.x * cellSize) + "," + (d.y * cellSize) + ")")
             .on("mouseenter", this.cellMouseEnter)
-            .on("click", d => this.cellClick(d, obj));
+            // Necessary to maintain parent reference across events)
+            .on("click", d => this.cellClick(d));
 
         newCells
             .append("text")
@@ -77,7 +85,7 @@ class editor {
             .attr("width", cellSize - margin)
             .attr("height", cellSize - margin);
 
-        
+
     }
 
     updateGrid() {
@@ -89,14 +97,22 @@ class editor {
     }
 
     cellMouseEnter(data) {
-        d3.select("#json-properties").text(JSON.stringify(data, null, 2));        
+        d3.select("#json-properties").text(JSON.stringify(data, null, 2));
     }
 
     cellClick(data, obj) {
-        data.t = "#";
-        data.tt = TILES["#"].tt;
+        let selection = d3.select("#tile").node().value;
 
-        obj.updateGrid();
-        obj.cellMouseEnter(data);
+        if (TILES[selection].proto != null) {
+            data.i = TILES[selection].proto();
+
+            selection = ".";
+        }
+
+        data.t = selection;
+        data.tt = TILES[selection].tt;
+
+        this.updateGrid();
+        this.cellMouseEnter(data);
     }
 }

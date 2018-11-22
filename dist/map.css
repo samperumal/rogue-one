@@ -17,6 +17,10 @@ text.floor, text.door.open {
     fill: darkslategray;
 }
 
+text.white {
+    fill: white;
+}
+
 text.red {
     fill: red;
 }

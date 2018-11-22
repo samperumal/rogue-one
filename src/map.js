@@ -47,6 +47,7 @@ class Cell {
 class door {
     constructor() {
         this.open = false;
+        this.colour = "white";
     }
 
     t() { return "+"; }
@@ -54,16 +55,28 @@ class door {
 }
 
 class gold {
+    constructor() {
+        this.quantity = 1;
+    }
+    
     t() { return "*"; }
     tt() { return "gold"; }
 }
 
 class key {
+    constructor() {
+        this.colour = "white";
+    }
+
     t() { return "¬"; }
     tt() { return this.colour + " key"; }
 }
 
 class potion {
+    constructor() {
+        this.colour = "white";
+    }
+
     t() { return "õ"; }
     tt() { return this.colour + " potion"; }
 }
@@ -83,12 +96,12 @@ const TILES = {
     "": { tt: "rock" },
     "#": { tt: "wall" },
     ".": { tt: "floor" },
-    "*": { tt: "gold", proto: new gold },
-    "¬": { tt: "key", proto: new key },
-    "õ": { tt: "potion", proto: new potion },
-    "▾": { tt: "armour", proto: new armour },
-    "/": { tt: "weapon", proto: new weapon },
-    "+": { tt: "door", proto: new door },
+    "*": { tt: "gold", proto: () => new gold },
+    "¬": { tt: "key", proto: () => new key },
+    "õ": { tt: "potion", proto: () => new potion },
+    "▾": { tt: "armour", proto: () => new armour },
+    "/": { tt: "weapon", proto: () => new weapon },
+    "+": { tt: "door", proto: () => new door },
 };
 
 function parseMap(d, itemDefinitions) {
@@ -140,7 +153,7 @@ function parseMap(d, itemDefinitions) {
             }
 
             // Set data object class from TILES dictionary lookup
-            Object.setPrototypeOf(cell.i, TILES[c].proto);
+            Object.setPrototypeOf(cell.i, TILES[c].proto());
 
             // Override tile symbol for parsing if known
             c = ".";

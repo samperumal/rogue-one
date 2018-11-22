@@ -286,7 +286,7 @@ function pickupGold(currentCell, proposedCell) {
     moveToSpace(currentCell, proposedCell);
     if (proposedCell.i != null && proposedCell.i.quantity > 0) {
         gameState.player.gold += proposedCell.i.quantity;
-        //info("You picked up " + proposedCell.i.quantity + " gold");
+        
         var msg = d3.select("#log").insert("div", ":first-child").attr("class", "info");
         msg.append("span").text("You picked up ");
         msg.append("span").attr("class", "gold").text(proposedCell.i.quantity);
