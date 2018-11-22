@@ -66,6 +66,7 @@ function initialise() {
         settings: {
             checkLOS: false,
             displayLOS: true,
+            visualRange: 10
         }
     };
 
@@ -102,6 +103,12 @@ function initialise() {
             d3.select("#enableLOS")
                 .on("change", function (d) {
                     gameState.settings.checkLOS = d3.select(this).property("checked");
+                    update();
+                });
+
+            d3.select("#visualRange")
+                .on("change", function (d) {
+                    gameState.settings.visualRange = d3.select(this).property("value");
                     update();
                 });
 
@@ -146,33 +153,41 @@ function update() {
         .attr("class", d => d.css())
         .text(d => d.s());
 
-    updateLOS();
+    if (gameState.settings.checkLOS) {
+        updateLOS();
+    }
+
+    if (gameState.settings.displayLOS) {
+        gameState.gfx.floor.selectAll("g.cell text")
+            .classed("hidden", d => !d.isVisible)
+            .classed("hasBeenSeen", d => d.hasBeenSeen);
+    }
 
     gfx.gold.text(gameState.player.gold);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
 }
 
-function updateLOS() {
-    // Perform LOS checks and updates
-    if (gameState.settings.checkLOS) {
-        // Calculate visibility between player and every other cell
-        const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player)
-        // Check whether each cell is currently visible
-        // Record change in visibility if never previously seen
-        gameState.mapArray.forEach(v => {
-            v.isVisible = isVisible(v);
-            if (!v.hasBeenSeen && v.isVisible)
-                v.hasBeenSeen = true;
-        });
+const stepDistanceBetween = (sourcePoint, destinationPoint) => Math.abs(destinationPoint.x - sourcePoint.x) + Math.abs(destinationPoint.y - sourcePoint.y);
 
-        if (gameState.settings.displayLOS) {
-            // Update 
-            gameState.gfx.floor.selectAll("g.cell text")
-                .classed("hidden", d => !d.isVisible)
-                .classed("hasBeenSeen", d => d.hasBeenSeen);
-        }
-    }
+// Perform LOS checks and updates
+function updateLOS() {
+    // Clear stale state
+    gameState.mapArray.forEach(v => v.isVisible = false);
+
+    // We only need to consider objects within the visual range
+    const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.settings.visualRange);
+
+    // isVisible means there is line of sight to the player
+    const isVisible = lineOfSightTest(objectsInRange)(gameState.player)
+
+    // Check whether each cell is currently visible
+    // Record change in visibility if never previously seen
+    objectsInRange.forEach(v => {
+        v.isVisible = isVisible(v);
+        if (!v.hasBeenSeen && v.isVisible)
+            v.hasBeenSeen = true;
+    });
 }
 
 // Process key input
@@ -227,6 +242,7 @@ function update_inventory(item) {
 }
 
 var possibleDestinations = {
+    "#": moveToWall,
     ".": moveToSpace,
     "+": moveThroughDoor,
     "*": pickupGold,
@@ -235,6 +251,14 @@ var possibleDestinations = {
     "▾": pickupItem,
     "õ": pickupItem
 };
+
+function moveToWall(_, proposedCell) {
+    if (proposedCell.isVisible || proposedCell.hasBeenSeen)
+        return error("Can't move in the requested direction");
+
+    info("You bump into something in the darkness");
+    proposedCell.hasBeenSeen = true;
+}
 
 // Simplest action function - just move the player to the new cell
 function moveToSpace(currentCell, proposedCell) {

@@ -39,7 +39,7 @@ text.hidden {
    visibility: hidden;
 }
 
-text.hidden.hasBeenSeen {
+text.wall.hidden.hasBeenSeen {
    fill: #333333;
    visibility: visible;
 }
