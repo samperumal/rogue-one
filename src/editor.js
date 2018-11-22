@@ -11,6 +11,8 @@ class editor {
 
         this.mapData = [];
         this.mapArray = [];
+
+        this.editedCell = null;
     }
 
     initialise() {
@@ -26,7 +28,7 @@ class editor {
             .attr("value", d => d[0])
             .text(d => d[0] + " [" + d[1].tt + "]");
 
-        console.log(Object.entries(TILES));
+        d3.select("#json-edit-save").on("click", () => this.editSaveClick());
 
         this.createGrid();
 
@@ -63,6 +65,8 @@ class editor {
         const cells = this.gfx.grid.selectAll("g.cell")
             .data(this.mapArray);
 
+        const obj = this;
+
         // Create new groups and populate with contents
         const newCells = cells.enter()
             .append("g")
@@ -70,7 +74,8 @@ class editor {
             .attr("transform", d => "translate(" + (d.x * cellSize) + "," + (d.y * cellSize) + ")")
             .on("mouseenter", this.cellMouseEnter)
             // Necessary to maintain parent reference across events)
-            .on("click", d => this.cellClick(d));
+            .on("click", d => obj.cellClick(d))
+            .on("dblclick", d => obj.cellDoubleClick(d));
 
         newCells
             .append("text")
@@ -100,7 +105,7 @@ class editor {
         d3.select("#json-properties").text(JSON.stringify(data, null, 2));
     }
 
-    cellClick(data, obj) {
+    cellClick(data) {
         let selection = d3.select("#tile").node().value;
 
         if (TILES[selection].proto != null) {
@@ -114,5 +119,31 @@ class editor {
 
         this.updateGrid();
         this.cellMouseEnter(data);
+    }
+
+    cellDoubleClick(data) {
+        d3.select("#json-properties-div").classed("hidden-edit", true);
+        d3.select("#json-edit-div").classed("hidden-edit", false);
+
+        d3.select("#json-edit-text").property("value", JSON.stringify(data, null, 2));
+
+        this.editedCell = data;
+    }
+
+    editSaveClick() {
+        let json = d3.select("#json-edit-text").property("value");
+        console.log(json);
+        let data = JSON.parse(json);
+        console.log(data);
+
+        Object.setPrototypeOf(data.i, this.editedCell.i);
+        this.editedCell.i = data.i;
+
+        d3.select("#json-edit-text").property("value", "");
+
+        d3.select("#json-properties-div").classed("hidden-edit", false);
+        d3.select("#json-edit-div").classed("hidden-edit", true);        
+
+        this.updateGrid();
     }
 }

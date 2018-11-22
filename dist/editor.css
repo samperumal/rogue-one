@@ -3,8 +3,22 @@
     text-align: left;
 }
 
+#json-edit-div {
+    text-align: center;
+}
+
+div.hidden-edit {
+    display: none;
+}
+
+#json-edit-text {
+    height: 20em;
+    width: 90%;
+    margin: 1em;
+}
+
 #tile {
-    width: 100%;
+    width: 90%;
     margin: 1em;
 }
 

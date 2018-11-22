@@ -43,7 +43,6 @@ class Cell {
     }
 }
 
-
 class door {
     constructor() {
         this.open = false;
@@ -58,7 +57,7 @@ class gold {
     constructor() {
         this.quantity = 1;
     }
-    
+
     t() { return "*"; }
     tt() { return "gold"; }
 }
