@@ -265,8 +265,8 @@ var possibleDestinations = {
     "+": moveThroughDoor,
     "*": pickupGold,
     "¬": pickupItem,
-    "/": pickupWeapon,
-    "▾": pickupArmour,
+    "/": pickupItem,
+    "▾": pickupItem,
     "õ": pickupItem
 };
 
@@ -320,24 +320,29 @@ function pickupItem(currentCell, proposedCell) {
     if (!gameState.player.items.includes(newItem.tt())) {
         update_inventory(newItem.tt());
         proposedCell.i = null;
+
+        switch (newItem.t()) {
+            case "/": // weapon;
+                equipWeapon(newItem);   
+                break;
+            case "▾": // armour
+                equipArmour(newItem);
+                break;
+        }
     }
     else {
         info("You already have a " + newItem.tt());
     }
 }
 
-function pickupArmour(currentCell, proposedCell) {
-    const newArmour = proposedCell.i;
-    pickupItem(currentCell, proposedCell);
+function equipArmour(newArmour) {
     if (newArmour.armour > gameState.player.armour) {
         gameState.player.armour = newArmour.armour;
         info("You have equipped the " + newArmour.name)
     }
 }
 
-function pickupWeapon(currentCell, proposedCell) {
-    const newWeapon = proposedCell.i;
-    pickupItem(currentCell, proposedCell);
+function equipWeapon(newWeapon) {
     if (newWeapon.damage > gameState.player.damage) {
         gameState.player.damage = newWeapon.damage;
         info("You have equipped the " + newWeapon.name)
