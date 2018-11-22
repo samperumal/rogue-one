@@ -1,10 +1,9 @@
 export { loadMap };
 
-function loadMap(url) {
-    return d3.text(url + ".txt")
-        .then(mapText =>
-            d3.json(url + ".json").then(mapJson => parseMap(mapText, mapJson))
-        );
+async function loadMap(url) {
+    const downloads = [d3.text(url + ".txt"), d3.json(url + ".json")];
+    const [mapText, mapJson] = await Promise.all(downloads);
+    return parseMap(mapText, mapJson);
 }
 
 class Cell {
