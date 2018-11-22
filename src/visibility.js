@@ -22,8 +22,8 @@ const blocksLineOfSight = point => point.tt == "wall";
 
 const isBig = blocksLineOfSight
 
-// Small objects: test visibility of center point 
-// Large objects: test visibility of closest corner 
+// Small objects: test visibility of center point
+// Large objects: test visibility of closest corner
 const adjustForSize = line => {
     if (!isBig(line[1])) return line;
     const vector = {
@@ -40,7 +40,7 @@ const lineOfSightTest = world => fromPoint => toPoint => {
     const line = adjustForSize([fromPoint, toPoint])
     return world
         .filter(blocksLineOfSight)
-        .filter(v => v != fromPoint && v != toPoint) // an object should not block LOS to itself 
+        .filter(v => v != fromPoint && v != toPoint) // an object should not block LOS to itself
         .map(v => ({ ...v, radius: 0.5 }))
         .filter(circleIntersectsLine(line))
         .length == 0;

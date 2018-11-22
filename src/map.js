@@ -126,7 +126,7 @@ function parseMap(d, itemDefinitions) {
     return { mapData, mapArray };
 
 
-    // Turn each character into a cell, based on the symbol and accompanying 
+    // Turn each character into a cell, based on the symbol and accompanying
     // definition in the json file.
     function parseCell(c, itemDefinitions, x, y) {
         const cell = new Cell(x, y);
