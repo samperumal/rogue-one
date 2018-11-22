@@ -65,7 +65,7 @@ class Rule {
        Action is optional and will be invoked on each matching rule in a sequence, not just terminal ones.
      * @param {string|((key: string) => boolean|any)} trigger
      * @param {Rule[]} childRules
-     * @param {(context: any) => any} action 
+     * @param {(context: any) => any} action
      */
     constructor(trigger, childRules, action) {
         this.trigger = typeof trigger === "string" ? namedKeyTrigger(trigger) : trigger;

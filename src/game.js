@@ -199,7 +199,7 @@ function updateLOS() {
         });
 
         if (gameState.settings.displayLOS) {
-            // Update 
+            // Update
             gameState.gfx.floor.selectAll("g.cell text")
                 .classed("hidden", d => !d.isVisible)
                 .classed("hasBeenSeen", d => d.hasBeenSeen);
@@ -304,7 +304,7 @@ function pickupGold(currentCell, proposedCell) {
     moveToSpace(currentCell, proposedCell);
     if (proposedCell.i != null && proposedCell.i.quantity > 0) {
         gameState.player.gold += proposedCell.i.quantity;
-        
+
         var msg = d3.select("#log").insert("div", ":first-child").attr("class", "info");
         msg.append("span").text("You picked up ");
         msg.append("span").attr("class", "gold").text(proposedCell.i.quantity);
