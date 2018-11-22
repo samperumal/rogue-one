@@ -1,4 +1,4 @@
-export { loadMap, Cell, TILES };
+export { loadMap, Cell, TILES, key, armour, weapon };
 
 async function loadMap(url) {
     const downloads = [d3.text(url + ".txt"), d3.json(url + ".json")];

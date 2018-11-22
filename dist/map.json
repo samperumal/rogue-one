@@ -15,8 +15,12 @@
         { "y":13, "x": 31, "colour": "green" },
         { "y":15, "x": 30, "colour": "red" }
     ],
-    "/": [],
-    "▾": [],
+    "/": [
+        { "x": 8, "y": 3, "name": "club", "damage": 3 }
+    ],
+    "▾": [
+        { "x": 21, "y": 15, "name": "scale mail", "armour": 4 }
+    ],
     "õ": [
         { "x": 21, "y":7, "colour": "green" }
     ]
