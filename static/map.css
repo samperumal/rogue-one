@@ -34,6 +34,6 @@ text.hidden {
    fill:black;
 }
 
-text.hidden.hasBeenSeen.wall {
+text.wall.hidden.hasBeenSeen {
    fill:#333333;
 }
