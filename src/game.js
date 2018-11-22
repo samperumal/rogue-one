@@ -163,6 +163,7 @@ function update() {
             .classed("hasBeenSeen", d => d.hasBeenSeen);
     }
 
+
     gfx.gold.text(gameState.player.gold);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
@@ -170,24 +171,34 @@ function update() {
 
 const stepDistanceBetween = (sourcePoint, destinationPoint) => Math.abs(destinationPoint.x - sourcePoint.x) + Math.abs(destinationPoint.y - sourcePoint.y);
 
-// Perform LOS checks and updates
 function updateLOS() {
-    // Clear stale state
-    gameState.mapArray.forEach(v => v.isVisible = false);
+    // Perform LOS checks and updates
+    if (gameState.settings.checkLOS) {
+        // Clear stale state
+        gameState.mapArray.forEach(v => v.isVisible = false);
 
-    // We only need to consider objects within the visual range
-    const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.settings.visualRange);
+        // We only need to consider objects within the visual range
+        const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.settings.visualRange);
 
-    // isVisible means there is line of sight to the player
-    const isVisible = lineOfSightTest(objectsInRange)(gameState.player)
+        // isVisible means there is line of sight to the player
+        const isVisible = lineOfSightTest(objectsInRange)(gameState.player)
 
-    // Check whether each cell is currently visible
-    // Record change in visibility if never previously seen
-    objectsInRange.forEach(v => {
-        v.isVisible = isVisible(v);
-        if (!v.hasBeenSeen && v.isVisible)
-            v.hasBeenSeen = true;
-    });
+        // Check whether each cell is currently visible
+        // Record change in visibility if never previously seen
+        objectsInRange.forEach(v => {
+            v.isVisible = isVisible(v);
+            if (!v.hasBeenSeen && v.isVisible)
+                v.hasBeenSeen = true;
+        });
+
+        if (gameState.settings.displayLOS) {
+            // Update 
+            gameState.gfx.floor.selectAll("g.cell text")
+                .classed("hidden", d => !d.isVisible)
+                .classed("hasBeenSeen", d => d.hasBeenSeen);
+        }
+
+    }
 }
 
 // Process key input
@@ -286,7 +297,7 @@ function pickupGold(currentCell, proposedCell) {
     moveToSpace(currentCell, proposedCell);
     if (proposedCell.i != null && proposedCell.i.quantity > 0) {
         gameState.player.gold += proposedCell.i.quantity;
-        //info("You picked up " + proposedCell.i.quantity + " gold");
+        
         var msg = d3.select("#log").insert("div", ":first-child").attr("class", "info");
         msg.append("span").text("You picked up ");
         msg.append("span").attr("class", "gold").text(proposedCell.i.quantity);
