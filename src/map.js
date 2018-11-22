@@ -117,7 +117,7 @@ function parseMap(d, itemDefinitions) {
     // Turn each character into a cell, based on the symbol and accompanying 
     // definition in the json file.
     function parseCell(c, itemDefinitions, x, y) {
-        var cell = new Cell(x, y);
+        const cell = new Cell(x, y);
 
         // Override tile symbol for parsing if player
         if (c == "@") {
@@ -127,8 +127,7 @@ function parseMap(d, itemDefinitions) {
 
         // Attempt to find this cell in item definition metadata
         else if (itemDefinitions != null && itemDefinitions[c] != null) {
-            for (var index in itemDefinitions[c]) {
-                var item = itemDefinitions[c][index];
+            for (let item of itemDefinitions[c]) {
                 if (item.x == cell.x && item.y == cell.y) {
                     cell.i = item;
                 }
