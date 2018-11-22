@@ -11,31 +11,31 @@ document.addEventListener("DOMContentLoaded", function () {
 var gameState = {};
 var inputState = new InputStateMachine([
     new Rule(key => {
-            switch (key) {
-                case "KeyW":
-                case "ArrowUp": return [0, -1];
-                case "KeyS":
-                case "ArrowDown": return [0, 1];
-                case "KeyA":
-                case "ArrowLeft": return [-1, 0];
-                case "KeyD":
-                case "ArrowRight": return [1, 0];
-                default: return false;
-            }
-        },
+        switch (key) {
+            case "KeyW":
+            case "ArrowUp": return [0, -1];
+            case "KeyS":
+            case "ArrowDown": return [0, 1];
+            case "KeyA":
+            case "ArrowLeft": return [-1, 0];
+            case "KeyD":
+            case "ArrowRight": return [1, 0];
+            default: return false;
+        }
+    },
         [],
         coord => requestMove(...coord)
     ),
     // TODO(antonburger): Remove; testing guff to demo a multi-key sequence with context
     new Rule("KeyQ", [
         new Rule(key => {
-                switch (key) {
-                    case "Digit1": return 1;
-                    case "Digit2": return 2;
-                    case "Digit3": return 3;
-                    default: return false;
-                }
-            },
+            switch (key) {
+                case "Digit1": return 1;
+                case "Digit2": return 2;
+                case "Digit3": return 3;
+                default: return false;
+            }
+        },
             [],
             context => console.log("Quaffed potion " + context))
     ])
@@ -66,6 +66,7 @@ function initialise() {
         settings: {
             checkLOS: true,
             displayLOS: true,
+            visualRange: 10
         }
     };
 
@@ -102,6 +103,12 @@ function initialise() {
             d3.select("#enableLOS")
                 .on("change", function (d) {
                     gameState.settings.checkLOS = d3.select(this).property("checked");
+                    update();
+                });
+
+            d3.select("#visualRange")
+                .on("change", function (d) {
+                    gameState.settings.visualRange = d3.select(this).property("value");
                     update();
                 });
 
@@ -150,19 +157,29 @@ function update() {
 
     updateLOS();
 
+
     gfx.gold.text(gameState.player.gold);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
 }
 
+const stepDistanceBetween = (sourcePoint, destinationPoint) => Math.abs(destinationPoint.x - sourcePoint.x) + Math.abs(destinationPoint.y - sourcePoint.y);
+
 function updateLOS() {
     // Perform LOS checks and updates
     if (gameState.settings.checkLOS) {
-        // Calculate visibility between player and every other cell
-        const isVisible = lineOfSightTest(gameState.mapArray)(gameState.player)
+        // Clear stale state
+        gameState.mapArray.forEach(v => v.isVisible = false);
+
+        // We only need to consider objects within the visual range
+        const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.settings.visualRange);
+
+        // isVisible means there is line of sight to the player
+        const isVisible = lineOfSightTest(objectsInRange)(gameState.player)
+
         // Check whether each cell is currently visible
         // Record change in visibility if never previously seen
-        gameState.mapArray.forEach(v => {
+        objectsInRange.forEach(v => {
             v.isVisible = isVisible(v);
             if (!v.hasBeenSeen && v.isVisible)
                 v.hasBeenSeen = true;
@@ -174,6 +191,7 @@ function updateLOS() {
                 .classed("hidden", d => !d.isVisible)
                 .classed("hasBeenSeen", d => d.hasBeenSeen);
         }
+
     }
 }
 
