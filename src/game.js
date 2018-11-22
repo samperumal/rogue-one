@@ -58,6 +58,8 @@ function initialise() {
             gold: 0,
             items: [],
             health: 5,
+            armour: 0,
+            damage: 1
         },
         // Map data
         mapData: null,
@@ -75,6 +77,9 @@ function initialise() {
     gameState.gfx.content = gameState.gfx.svg.append("g").attr("class", "content");
     gameState.gfx.floor = gameState.gfx.content.append("g").attr("class", "floor");
     gameState.gfx.gold = d3.select("#gold");
+    gameState.gfx.health = d3.select("#health");
+    gameState.gfx.armour = d3.select("#armourlevel");
+    gameState.gfx.damage = d3.select("#weaponLevel");
 
     gameState.gfx.svg
         .attr("viewBox", "0 0 " + (gameState.gfx.width) + " " + (gameState.gfx.height));
@@ -164,6 +169,9 @@ function update() {
     }
 
     gfx.gold.text(gameState.player.gold);
+    gfx.health.text(gameState.player.health);
+    gfx.armour.text(gameState.player.armour);
+    gfx.damage.text(gameState.player.damage);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
 }
@@ -257,8 +265,8 @@ var possibleDestinations = {
     "+": moveThroughDoor,
     "*": pickupGold,
     "¬": pickupItem,
-    "/": pickupItem,
-    "▾": pickupItem,
+    "/": pickupWeapon,
+    "▾": pickupArmour,
     "õ": pickupItem
 };
 
@@ -315,5 +323,23 @@ function pickupItem(currentCell, proposedCell) {
     }
     else {
         info("You already have a " + newItem.tt());
+    }
+}
+
+function pickupArmour(currentCell, proposedCell) {
+    const newArmour = proposedCell.i;
+    pickupItem(currentCell, proposedCell);
+    if (newArmour.armour > gameState.player.armour) {
+        gameState.player.armour = newArmour.armour;
+        info("You have equipped the " + newArmour.name)
+    }
+}
+
+function pickupWeapon(currentCell, proposedCell) {
+    const newWeapon = proposedCell.i;
+    pickupItem(currentCell, proposedCell);
+    if (newWeapon.damage > gameState.player.damage) {
+        gameState.player.damage = newWeapon.damage;
+        info("You have equipped the " + newWeapon.name)
     }
 }
