@@ -14,7 +14,7 @@
 
 <body>
     <div class="main-col" style="width:100%">
-        <div class="game-grid"style="width:80%; float: left">
+        <div class="game-grid" style="width:80%; float: left">
             <svg id="gfx" preserveAspectRatio="xMidYMid"></svg>
         </div>
         <div class="status-bar">
@@ -24,11 +24,19 @@
             <div>
                 <h3>Settings</h3>
                 <div>
-                    <input type="checkbox" id="enableLOS" /><label for="enableLOS">Enable LOS</label>
-                    <!-- <input type="checkbox" id="displayLOS" checked="checked" /><label for="displayLOS">Display LOS</label> -->
+                    <div>
+                        <input type="checkbox" id="enableLOS" checked="checked" /><label for="enableLOS">Enable LOS</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="displayLOS" checked="checked" /><label for="displayLOS">Display LOS</label>
+                    </div>
+                    <div>
+                        <label for="visualRange">Visual Range</label>
+                        <input type="number" id="visualRange" value="10" style="width:3em" />
+                    </div>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 
     <div class="main-col" id="log"></div>
