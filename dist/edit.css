@@ -1,4 +1,6 @@
-div.dim {
+#json-properties {
+    color: white;
+    text-align: left;
 }
 
 .dim table {
@@ -9,4 +11,14 @@ div.dim {
 .dim input {
     width: 3em;
     padding-left: 3px;
+}
+
+.cellbg {
+    stroke: #111;
+    stroke-width: 1px;
+    fill: transparent;
+}
+
+.cellbg:hover {
+    stroke: white;
 }
