@@ -163,7 +163,6 @@ function update() {
             .classed("hasBeenSeen", d => d.hasBeenSeen);
     }
 
-
     gfx.gold.text(gameState.player.gold);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
