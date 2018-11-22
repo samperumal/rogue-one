@@ -142,7 +142,7 @@ class editor {
         d3.select("#json-edit-text").property("value", "");
 
         d3.select("#json-properties-div").classed("hidden-edit", false);
-        d3.select("#json-edit-div").classed("hidden-edit", true);        
+        d3.select("#json-edit-div").classed("hidden-edit", true);
 
         this.updateGrid();
     }
