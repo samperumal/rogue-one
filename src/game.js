@@ -244,11 +244,20 @@ function update_inventory(item) {
 }
 
 var possibleDestinations = {
+    "#": moveToWall,
     ".": moveToSpace,
     "+": moveThroughDoor,
     "*": pickupGold,
     "¬": pickupKey
 };
+
+function moveToWall(_, proposedCell) {
+    if (proposedCell.isVisible || proposedCell.hasBeenSeen)
+        return error("Can't move in the requested direction");
+
+    info("You bump into something in the darkness");
+    proposedCell.hasBeenSeen = true;
+}
 
 // Simplest action function - just move the player to the new cell
 function moveToSpace(currentCell, proposedCell) {
