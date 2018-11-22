@@ -15,22 +15,16 @@ svg {
 .gamegrid { width: 80%; float: left; }
 .status-bar { width: 18%; display: inline-block; color: white; }
 
+table#statstable tr { height: 10px; }
+table#statstable td:nth-child(odd) { min-width: 75px; text-align: left; }
+table#statstable td:nth-child(even) { text-align: right; }
+
 #log {
     padding-top: 10px;
     height: 100px;
     overflow-y: auto;
 }
 
-#inventory-heading {
-    font-size: 16pt; 
-    font-weight: bold;
-    padding-bottom: 25px;
-}
-
-#inventory {
-    padding-bottom: 25px;
-}
- 
 #gold { 
     color: gold; 
 }
