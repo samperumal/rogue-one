@@ -1,4 +1,5 @@
 export { loadMap, Cell, TILES, key, armour, weapon };
+declare const d3: any;
 
 async function loadMap(url) {
     const downloads = [d3.text(url + ".txt"), d3.json(url + ".json")];
@@ -7,16 +8,14 @@ async function loadMap(url) {
 }
 
 class Cell {
-    constructor(x, y) {
-        this.x = x; // X-coordinate
-        this.y = y; // Y-coordinate
-        this.t = null; // Cell tile symbol
-        this.tt = null; // Cell tile type
-        this.p = false; // Player in cell
-        this.i = null; // Item in cell
+    t = null; // Cell tile symbol
+    tt = null; // Cell tile type
+    p = false; // Player in cell
+    i = null; // Item in cell
+    isVisible = false;
+    hasBeenSeen = false;
 
-        this.isVisible = false;
-        this.hasBeenSeen = false;
+    constructor(public x, public y) {
     }
 
     // Display symbol
@@ -44,57 +43,41 @@ class Cell {
 }
 
 class door {
-    constructor() {
-        this.open = false;
-        this.colour = "white";
-    }
-
+    open = false;
+    colour = "white";
     t() { return "+"; }
     tt() { return this.colour + " door " + (this.open ? "open" : "closed"); }
 }
 
 class gold {
-    constructor() {
-        this.quantity = 1;
-    }
-
+    quantity = 1;
     t() { return "*"; }
     tt() { return "gold"; }
 }
 
 class key {
-    constructor() {
-        this.colour = "white";
-    }
-
+    colour = "white";
     t() { return "¬"; }
     tt() { return this.colour + " key"; }
 }
 
 class potion {
-    constructor() {
-        this.colour = "white";
-    }
-
+    colour = "white";
     t() { return "õ"; }
     tt() { return this.colour + " potion"; }
 }
 
 class weapon {
-    constructor() {
-        this.name = "unidentified";
-        this.damage = 0;
-    }
-    
+    name = "unidentified";
+    damage = 0;
+
     t() { return "/"; }
     tt() { return "weapon (" + this.name + ")"; }
 }
- class armour {
-    constructor() {
-        this.name = "unidentified";
-        this.armour = 0;
-    }
-    
+class armour {
+    name = "unidentified";
+    armour = 0;
+
     t() { return "▾"; }
     tt() { return "armour (" + this.name + ")"; }
 }
