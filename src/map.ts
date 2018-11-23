@@ -73,6 +73,10 @@ class weapon {
 
     t() { return "/"; }
     tt() { return "weapon (" + this.name + ")"; }
+
+    applyEffect(playerStats) {
+        playerStats.armour += this.armour;
+    }
 }
 class armour {
     name = "unidentified";
@@ -80,6 +84,10 @@ class armour {
 
     t() { return "▾"; }
     tt() { return "armour (" + this.name + ")"; }
+
+    applyEffect(playerStats) {
+        playerStats.armour += this.armour;
+    }
 }
 
 // Known tile types
