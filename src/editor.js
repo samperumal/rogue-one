@@ -136,8 +136,10 @@ class editor {
         let data = JSON.parse(json);
         console.log(data);
 
-        Object.setPrototypeOf(data.i, this.editedCell.i);
-        this.editedCell.i = data.i;
+        if (data.i) {
+            Object.setPrototypeOf(data.i, this.editedCell.i);
+            this.editedCell.i = data.i;
+        }
 
         d3.select("#json-edit-text").property("value", "");
 
