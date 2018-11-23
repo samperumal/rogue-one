@@ -1,6 +1,6 @@
 // To just import everything from all of d3, use this:
 //import * as d3 from "d3";
-import { loadMap } from "./map.js";
+import { loadMap, armour, weapon, key } from "./map.js";
 import { lineOfSightTest } from "./visibility.js";
 import { InputStateMachine, Rule } from "./input.js";
 
@@ -58,6 +58,8 @@ function initialise() {
             gold: 0,
             items: [],
             health: 5,
+            armour: 0,
+            damage: 1
         },
         // Map data
         mapData: null,
@@ -75,6 +77,9 @@ function initialise() {
     gameState.gfx.content = gameState.gfx.svg.append("g").attr("class", "content");
     gameState.gfx.floor = gameState.gfx.content.append("g").attr("class", "floor");
     gameState.gfx.gold = d3.select("#gold");
+    gameState.gfx.health = d3.select("#health");
+    gameState.gfx.armour = d3.select("#armourlevel");
+    gameState.gfx.damage = d3.select("#weaponLevel");
 
     gameState.gfx.svg
         .attr("viewBox", "0 0 " + (gameState.gfx.width) + " " + (gameState.gfx.height));
@@ -163,8 +168,10 @@ function update() {
             .classed("hasBeenSeen", d => d.hasBeenSeen);
     }
 
-
     gfx.gold.text(gameState.player.gold);
+    gfx.health.text(gameState.player.health);
+    gfx.armour.text(gameState.player.armour);
+    gfx.damage.text(gameState.player.damage);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
 }
@@ -313,8 +320,31 @@ function pickupItem(currentCell, proposedCell) {
     if (!gameState.player.items.includes(newItem.tt())) {
         update_inventory(newItem.tt());
         proposedCell.i = null;
+
+        switch (newItem.t()) {
+            case "/": // weapon;
+                equipWeapon(newItem);   
+                break;
+            case "▾": // armour
+                equipArmour(newItem);
+                break;
+        }
     }
     else {
         info("You already have a " + newItem.tt());
+    }
+}
+
+function equipArmour(newArmour) {
+    if (newArmour.armour > gameState.player.armour) {
+        gameState.player.armour = newArmour.armour;
+        info("You have equipped the " + newArmour.name)
+    }
+}
+
+function equipWeapon(newWeapon) {
+    if (newWeapon.damage > gameState.player.damage) {
+        gameState.player.damage = newWeapon.damage;
+        info("You have equipped the " + newWeapon.name)
     }
 }

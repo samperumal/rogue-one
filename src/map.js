@@ -1,4 +1,4 @@
-export { loadMap, Cell, TILES };
+export { loadMap, Cell, TILES, key, armour, weapon };
 
 async function loadMap(url) {
     const downloads = [d3.text(url + ".txt"), d3.json(url + ".json")];
@@ -81,12 +81,22 @@ class potion {
 }
 
 class weapon {
+    constructor() {
+        this.name = "unidentified";
+        this.damage = 0;
+    }
+    
     t() { return "/"; }
-    tt() { return "weapon"; }
+    tt() { return "weapon (" + this.name + ")"; }
 }
  class armour {
+    constructor() {
+        this.name = "unidentified";
+        this.armour = 0;
+    }
+    
     t() { return "▾"; }
-    tt() { return "armour"; }
+    tt() { return "armour (" + this.name + ")"; }
 }
 
 // Known tile types

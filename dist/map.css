@@ -17,20 +17,12 @@ text.floor, text.door.open {
     fill: darkslategray;
 }
 
-text.white {
-    fill: white;
-}
-
-text.red {
-    fill: red;
-}
-
-text.green {
-    fill: green;
-}
+.red { fill: red; }
+.gold { fill: gold; }
+.green { fill: green; }
+.white { fill: white; }
 
 text.gold {
-    fill: gold;
     font-weight: bold;
 }
 

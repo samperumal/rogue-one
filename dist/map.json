@@ -15,8 +15,14 @@
         { "y":13, "x": 31, "colour": "green" },
         { "y":15, "x": 30, "colour": "red" }
     ],
-    "/": [],
-    "▾": [],
+    "/": [
+        { "x": 8, "y": 3, "name": "spiked club", "damage": 4 },
+        { "x": 24, "y": 11, "name": "rat on a stick", "damage": 2 }
+    ],
+    "▾": [
+        { "x": 21, "y": 15, "name": "rags", "armour": 1 },
+        { "x": 21, "y": 3, "name": "scale mail", "armour": 4 }
+    ],
     "õ": [
         { "x": 21, "y":7, "colour": "green" }
     ]
