@@ -64,7 +64,7 @@ function initialise() {
         // Convenience copy of above for display
         mapArray: null,
         settings: {
-            checkLOS: false,
+            checkLOS: true,
             displayLOS: true,
             visualRange: 10
         }
