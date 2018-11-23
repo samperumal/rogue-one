@@ -61,11 +61,13 @@ function initialise() {
             health: 5,
             baseStats: {
                 armour: 0,
-                damage: 1
+                damage: 1,
+                visualRange: 10
             },
             stats: {
                 armour: 0,
-                damage: 1
+                damage: 1,
+                visualRange:10
             }
         },
         // Map data
@@ -162,7 +164,7 @@ function update() {
 
 
     gameState.player.stats = gameState.player.baseStats;
-    for (const item in gameState.player.equippedItems) {
+    for (const item of gameState.player.equippedItems) {
         if (item.applyEffect)
             item.applyEffect(gameState.player.stats);
     }
@@ -200,7 +202,7 @@ function updateLOS() {
         gameState.mapArray.forEach(v => v.isVisible = false);
 
         // We only need to consider objects within the visual range
-        const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.settings.visualRange);
+        const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.player.stats.visualRange);
 
         // isVisible means there is line of sight to the player
         const isVisible = lineOfSightTest(objectsInRange)(gameState.player)
@@ -351,7 +353,7 @@ function pickupItem(currentCell, proposedCell) {
 }
 
 function equipArmour(newArmour) {
-    gameState.equippedItems.push(newArmour);
+    gameState.player.equippedItems.push(newArmour);
     info("You have equipped the " + newArmour.name)
 }
 

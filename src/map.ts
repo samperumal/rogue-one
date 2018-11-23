@@ -67,7 +67,11 @@ class potion {
     tt() { return this.colour + " potion"; }
 }
 
-class weapon {
+interface equipment {
+    applyEffect(playerStats);
+}
+
+class weapon implements equipment {
     name = "unidentified";
     damage = 0;
 
@@ -75,10 +79,15 @@ class weapon {
     tt() { return "weapon (" + this.name + ")"; }
 
     applyEffect(playerStats) {
-        playerStats.armour += this.armour;
+        playerStats.armour += this.damage;
     }
 }
-class armour {
+
+
+type armour = baseArmour | bucketHelm;
+
+class baseArmour implements equipment {
+    type = "base_armor"
     name = "unidentified";
     armour = 0;
 
@@ -90,79 +99,95 @@ class armour {
     }
 }
 
+class bucketHelm implements equipment {
+    type = "bucket_helm"
+    name = "";
+    t() { return "▾"; }
+    tt() { return "armour (" + this.name + ")"; }
+
+    applyEffect(playerStats) {
+        playerStats.visualRange = 0;
+    }
+}
+
 // Known tile types
 const TILES = {
     " ": { tt: "rock" },
     "": { tt: "rock" },
     "#": { tt: "wall" },
     ".": { tt: "floor" },
-    "*": { tt: "gold", proto: () => new gold },
-    "¬": { tt: "key", proto: () => new key },
-    "õ": { tt: "potion", proto: () => new potion },
-    "▾": { tt: "armour", proto: () => new armour },
-    "/": { tt: "weapon", proto: () => new weapon },
-    "+": { tt: "door", proto: () => new door },
-};
-
-function parseMap(d, itemDefinitions) {
-    console.log("Parsing");
-
-    // Convert input text into array of arrays of characters (length 1 strings)
-    var mapText = d3.dsvFormat("").parseRows(d).map(d => d[0].split('').map(d => d == " " ? "" : d));
-
-    var y = 0;
-
-    // Convert strings into cell description objects
-    const mapData = mapText.map(function (a) {
-        var x = 0;
-        var row = a.map(c => parseCell(c, itemDefinitions, x++, y));
-        y++;
-
-        return row;
-    });
-
-    // Flatten map for rendering
-    const mapArray = mapData.reduce((a, b) => a.concat(b), []);
-
-    return { mapData, mapArray };
-
-
-    // Turn each character into a cell, based on the symbol and accompanying
-    // definition in the json file.
-    function parseCell(c, itemDefinitions, x, y) {
-        const cell = new Cell(x, y);
-
-        // Override tile symbol for parsing if player
-        if (c == "@") {
-            cell.p = true;
-            c = ".";
-        }
-
-        // Attempt to find this cell in item definition metadata
-        else if (itemDefinitions != null && itemDefinitions[c] != null) {
-            for (const item of itemDefinitions[c]) {
-                if (item.x == cell.x && item.y == cell.y) {
-                    cell.i = item;
-                }
+    "*": { tt: "gold", proto: _ => new gold },
+    "¬": { tt: "key", proto: _ => new key },
+    "õ": { tt: "potion", proto: _ => new potion },
+    "▾": { tt: "armour", proto: (v: armour) => {
+            switch (v.type) {
+                case "bucket_helm": return new bucketHelm;
+                default: return new baseArmour;
             }
+            }},
+    "/": { tt: "weapon", proto: _ => new weapon },
+    "+": { tt: "door", proto: _ => new door },
+    };
 
-            if (cell.i == null) {
-                console.log("No definition found: ", cell, c);
-                // Create default if none exists
-                cell.i = {};
-            }
+    function parseMap(d, itemDefinitions) {
+        console.log("Parsing");
 
-            // Set data object class from TILES dictionary lookup
-            Object.setPrototypeOf(cell.i, TILES[c].proto());
+// Convert input text into array of arrays of characters (length 1 strings)
+var mapText = d3.dsvFormat("").parseRows(d).map(d => d[0].split('').map(d => d == " " ? "" : d));
 
-            // Override tile symbol for parsing if known
-            c = ".";
-        }
+var y = 0;
 
-        // Assign symbol and tile type
-        cell.t = c;
-        cell.tt = TILES[c].tt;
+// Convert strings into cell description objects
+const mapData = mapText.map(function (a) {
+    var x = 0;
+    var row = a.map(c => parseCell(c, itemDefinitions, x++, y));
+    y++;
 
-        return cell;
+    return row;
+});
+
+// Flatten map for rendering
+const mapArray = mapData.reduce((a, b) => a.concat(b), []);
+
+return { mapData, mapArray };
+
+
+// Turn each character into a cell, based on the symbol and accompanying
+// definition in the json file.
+function parseCell(c, itemDefinitions, x, y) {
+    const cell = new Cell(x, y);
+
+    // Override tile symbol for parsing if player
+    if (c == "@") {
+        cell.p = true;
+        c = ".";
     }
+
+    // Attempt to find this cell in item definition metadata
+    else if (itemDefinitions != null && itemDefinitions[c] != null) {
+        for (const item of itemDefinitions[c]) {
+            if (item.x == cell.x && item.y == cell.y) {
+                cell.i = item;
+            }
+        }
+
+        if (cell.i == null) {
+            console.log("No definition found: ", cell, c);
+            // Create default if none exists
+            cell.i = {};
+        }
+
+        // Set data object class from TILES dictionary lookup
+        Object.setPrototypeOf(cell.i, TILES[c].proto(cell.i));
+
+        // Override tile symbol for parsing if known
+        c = ".";
+    }
+
+    // Assign symbol and tile type
+    cell.t = c;
+    cell.tt = TILES[c].tt;
+
+    return cell;
+}
 }
