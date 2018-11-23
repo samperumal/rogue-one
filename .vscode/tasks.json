@@ -33,10 +33,7 @@
         {
             "label": "Start Dev Server",
             "type": "shell",
-            "command": "python -m http.server 8080",
-            "options": {
-                "cwd": "dist"
-            },
+            "command": "python ./dev-server.py",
             "presentation": {
                 "echo": true,
                 "reveal": "silent",
