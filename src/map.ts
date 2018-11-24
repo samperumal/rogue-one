@@ -43,12 +43,10 @@ class Cell {
 }
 
 class monster {
-    constructor() {
-        this.colour = "darkTurquoise";
-        this.health = 10;
-        this.armour = 1;
-        this.damage = 1;
-    }
+        colour = "darkTurquoise";
+        health = 10;
+        armour = 1;
+        damage = 1;
 
     t() { return "☻"; }
     tt() { return this.colour + " blob"; }
