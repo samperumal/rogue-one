@@ -9,11 +9,11 @@ text.player {
     font-weight: bolder;
 }
 
-text.wall, text.dead {
+text.wall {
     fill: lightslategray;
 }
 
-text.floor, text.door.open {
+.dead, .floor, text.door.open {
     fill: darkslategray;
 }
 
