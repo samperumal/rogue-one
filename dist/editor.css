@@ -22,14 +22,22 @@ div.hidden-edit {
     margin: 1em;
 }
 
-.dim table {
+.settings table {
     width: auto;
     margin: auto;
 }
 
-.dim input {
-    width: 3em;
+.settings table td {
+    text-align: left;
+}
+
+.settings input {
+    width: 15em;
     padding-left: 3px;
+}
+
+.settings input.dim {
+    width: 3em;
 }
 
 .cellbg {
