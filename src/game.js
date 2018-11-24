@@ -267,7 +267,8 @@ var possibleDestinations = {
     "¬": pickupItem,
     "/": pickupItem,
     "▾": pickupItem,
-    "õ": pickupItem
+    "õ": pickupItem,
+    "☻": hitMonster
 };
 
 function moveToWall(_, proposedCell) {
@@ -311,6 +312,10 @@ function pickupGold(currentCell, proposedCell) {
         msg.append("span").text(" gold");
         proposedCell.i = null;
     }
+}
+
+function hitMonster(currentCell, proposedCell) {
+    info("That's a monster");
 }
 
 function pickupItem(currentCell, proposedCell) {

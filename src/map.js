@@ -43,6 +43,14 @@ class Cell {
     }
 }
 
+class monster {
+    constructor() {
+        this.colour = "darkTurquoise";
+    }
+    t() { return "☻"; }
+    tt() { return this.colour + " blob"; }
+}
+
 class door {
     constructor() {
         this.open = false;
@@ -111,6 +119,7 @@ const TILES = {
     "▾": { tt: "armour", proto: () => new armour },
     "/": { tt: "weapon", proto: () => new weapon },
     "+": { tt: "door", proto: () => new door },
+    "☻": { tt: "monster", proto: () => new monster }
 };
 
 function parseMap(d, itemDefinitions) {
