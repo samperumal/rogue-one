@@ -43,10 +43,10 @@ class Cell {
 }
 
 class monster {
-        colour = "darkTurquoise";
-        health = 10;
-        armour = 1;
-        damage = 1;
+        colour = "white";
+        health = 1;
+        armour = 0;
+        damage = 0;
 
     t() { return "☻"; }
     tt() { return this.colour + " blob"; }
@@ -56,6 +56,7 @@ class monster {
         this.health = Math.max(0, this.health);             // Non-negative health
         if (this.health <= 0) { this.colour = "dead"; }
     }
+
     isDead() { return this.health <= 0; }
 }
 
@@ -96,7 +97,7 @@ class weapon implements equipment {
     tt() { return "weapon (" + this.name + ")"; }
 
     applyEffect(playerStats) {
-        playerStats.armour += this.damage;
+        playerStats.damage += this.damage;
     }
 }
 
@@ -119,11 +120,14 @@ class baseArmour implements equipment {
 class bucketHelm implements equipment {
     type = "bucket_helm"
     name = "";
+    armour = 0;
+
     t() { return "▾"; }
     tt() { return "armour (" + this.name + ")"; }
 
     applyEffect(playerStats) {
         playerStats.visualRange = 0;
+        playerStats.armour += this.armour;
     }
 }
 
@@ -141,7 +145,7 @@ const TILES = {
                 case "bucket_helm": return new bucketHelm;
                 default: return new baseArmour;
             }
-            }},
+        }},
     "/": { tt: "weapon", proto: _ => new weapon },
     "+": { tt: "door", proto: _ => new door },
     "☻": { tt: "monster", proto: () => new monster }
