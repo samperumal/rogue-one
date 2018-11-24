@@ -318,14 +318,15 @@ function pickupGold(currentCell, proposedCell) {
 }
 
 function hitMonster(currentCell, proposedCell) {
+    const monsterHealth = proposedCell.i.health;
     if (proposedCell.i.isDead())
         return moveToSpace(currentCell, proposedCell);
-    
+
     //  Monster is definitely still alive...
     proposedCell.i.takeDamage(gameState.player.damage);
 
-    info("You hit the monster, doing " + gameState.player.damage + " damage.  " +
-        "(" + proposedCell.i.tt() + ": " + Math.max(0, proposedCell.i.health) + " remaining)");
+    info("You hit the monster, doing " + (monsterHealth - proposedCell.i.health) + " damage.  " +
+        "(" + proposedCell.i.tt() + ": " + proposedCell.i.health + " remaining)");
 
     if (proposedCell.i.isDead()) {
         info("You slay the monster!");
