@@ -57,7 +57,10 @@ function initialise() {
             y: 0,
             gold: 0,
             items: [],
-            equippedItems: [],
+            equippedItems: {
+                weapon: null,
+                armour: null
+            },
             health: 5,
             baseStats: {
                 armour: 0,
@@ -67,7 +70,7 @@ function initialise() {
             stats: {
                 armour: 0,
                 damage: 1,
-                visualRange:10
+                visualRange: 10
             }
         },
         // Map data
@@ -164,8 +167,9 @@ function update() {
 
 
     gameState.player.stats = gameState.player.baseStats;
-    for (const item of gameState.player.equippedItems) {
-        if (item.applyEffect)
+    for (const key in gameState.player.equippedItems) {
+        const item = gameState.player.equippedItems[key];
+        if (item && item.applyEffect)
             item.applyEffect(gameState.player.stats);
     }
 
@@ -344,7 +348,7 @@ function hitMonster(currentCell, proposedCell) {
         return moveToSpace(currentCell, proposedCell);
 
     //  Monster is definitely still alive...
-    proposedCell.i.takeDamage(gameState.player.damage);
+    proposedCell.i.takeDamage(gameState.player.stats.damage);
 
     info("You hit the monster, doing " + (monsterHealth - proposedCell.i.health) + " damage.  " +
         "(" + proposedCell.i.tt() + ": " + proposedCell.i.health + " remaining)");
@@ -380,6 +384,8 @@ function pickupItem(currentCell, proposedCell) {
                 equipArmour(newItem);
                 break;
         }
+
+        updateStats();
     }
     else {
         info("You already have a " + newItem.tt());
@@ -387,11 +393,27 @@ function pickupItem(currentCell, proposedCell) {
 }
 
 function equipArmour(newArmour) {
-    gameState.player.equippedItems.push(newArmour);
-    info("You have equipped the " + newArmour.name)
+    var oldArmour = gameState.player.equippedItems.armour;
+    if (oldArmour == null || newArmour.damage > oldArmour.damage) {
+        gameState.player.equippedItems.armour = newArmour;
+        info("You have equipped the " + newArmour.name);
+    }
 }
 
 function equipWeapon(newWeapon) {
-    gameState.equippedItems.push(newArmour);
-    info("You have equipped the " + newWeapon.name)
+    var oldWeapon = gameState.player.equippedItems.weapon;
+    if (oldWeapon == null || newWeapon.damage > oldWeapon.damage) {
+        gameState.player.equippedItems.weapon = newWeapon;
+        info("You have equipped the " + newWeapon.name);
+    }
+}
+
+function updateStats() {
+    gameState.player.stats.armour = gameState.player.baseStats.armour;
+    if (gameState.player.equippedItems.armour != null)
+        gameState.player.stats.armour += gameState.player.equippedItems.armour.armour;
+
+    gameState.player.stats.damage = gameState.player.baseStats.damage;
+    if (gameState.player.equippedItems.weapon != null)
+        gameState.player.stats.damage += gameState.player.equippedItems.weapon.damage;
 }
