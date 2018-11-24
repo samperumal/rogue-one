@@ -13,7 +13,7 @@ text.wall {
     fill: lightslategray;
 }
 
-text.floor, text.door.open {
+.dead, .floor, text.door.open {
     fill: darkslategray;
 }
 
@@ -21,6 +21,7 @@ text.floor, text.door.open {
 .gold { fill: gold; }
 .green { fill: green; }
 .white { fill: white; }
+.darkTurquoise { fill: darkturquoise; }
 
 text.gold {
     font-weight: bold;
