@@ -118,8 +118,6 @@ class editor {
 
         if (TILES[selection].proto != null) {
             data.i = TILES[selection].proto();
-
-            selection = ".";
         }
 
         data.t = selection;
