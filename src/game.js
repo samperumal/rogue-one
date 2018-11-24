@@ -315,7 +315,17 @@ function pickupGold(currentCell, proposedCell) {
 }
 
 function hitMonster(currentCell, proposedCell) {
-    info("That's a monster");
+    if (proposedCell.i.isDead())
+        return moveToSpace(currentCell, proposedCell);
+    
+    proposedCell.i.takeDamage(gameState.player.damage);
+
+    info("You hit the monster, doing " + gameState.player.damage + " damage.  " +
+        "(" + proposedCell.i.tt() + ": " + Math.max(0, proposedCell.i.health) + " remaining)");
+
+    if (proposedCell.i.isDead()) {
+        info("You slay the monster!");
+    }
 }
 
 function pickupItem(currentCell, proposedCell) {

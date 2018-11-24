@@ -46,9 +46,19 @@ class Cell {
 class monster {
     constructor() {
         this.colour = "darkTurquoise";
+        this.health = 10;
+        this.armour = 0;
+        this.damage = 0;
     }
+
     t() { return "☻"; }
     tt() { return this.colour + " blob"; }
+
+    takeDamage(d) { 
+        this.health -= d; 
+        if (this.health <= 0) { this.colour = "dead"; }
+    }
+    isDead() { return this.health <= 0; }
 }
 
 class door {
