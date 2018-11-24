@@ -9,6 +9,7 @@ class editor {
             height: 450
         };
 
+        this.name = "untitled";
         this.mapData = [];
         this.mapArray = [];
 
@@ -16,6 +17,7 @@ class editor {
     }
 
     initialise() {
+        const editor = this;
         this.gfx.svg = d3.select("#gfx").attr("viewBox", "0 0 " + (this.gfx.width) + " " + (this.gfx.height));
         this.gfx.pan = this.gfx.svg.append("g").attr("class", "pan");
         this.gfx.grid = this.gfx.pan.append("g").attr("class", "grid");
@@ -29,6 +31,12 @@ class editor {
             .text(d => d[0] + " [" + d[1].tt + "]");
 
         d3.select("#json-edit-save").on("click", () => this.editSaveClick());
+
+        d3.select("#name")
+            .property("value", this.name)
+            .on("change", function() {
+                editor.name = this.value;
+            });
 
         this.createGrid();
 
