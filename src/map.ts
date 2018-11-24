@@ -42,6 +42,23 @@ class Cell {
     }
 }
 
+class monster {
+        colour = "darkTurquoise";
+        health = 10;
+        armour = 1;
+        damage = 1;
+
+    t() { return "☻"; }
+    tt() { return this.colour + " blob"; }
+
+    takeDamage(d) { 
+        this.health -= Math.max(1, d - this.armour);        // Minimum damage of 1
+        this.health = Math.max(0, this.health);             // Non-negative health
+        if (this.health <= 0) { this.colour = "dead"; }
+    }
+    isDead() { return this.health <= 0; }
+}
+
 class door {
     open = false;
     colour = "white";
@@ -127,10 +144,12 @@ const TILES = {
             }},
     "/": { tt: "weapon", proto: _ => new weapon },
     "+": { tt: "door", proto: _ => new door },
+    "☻": { tt: "monster", proto: () => new monster }
     };
 
-    function parseMap(d, itemDefinitions) {
-        console.log("Parsing");
+
+function parseMap(d, itemDefinitions) {
+    console.log("Parsing");
 
 // Convert input text into array of arrays of characters (length 1 strings)
 var mapText = d3.dsvFormat("").parseRows(d).map(d => d[0].split('').map(d => d == " " ? "" : d));

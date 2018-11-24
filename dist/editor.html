@@ -22,16 +22,20 @@
         <div class="status-bar">
             <div>
                 <h3>Settings</h3>
-                <div class="dim">
+                <div class="settings">
                     <table>
                         <tbody>
                             <tr>
+                                <td><label for="name">Name:</label></td>
+                                <td><input type="text" id="name"></td>
+                            </tr>
+                            <tr>
                                 <td><label for="width">Width: </label></td>
-                                <td><input type="number" id="width" value="20" /></td>
+                                <td><input class="dim" type="number" id="width" value="20" /></td>
                             </tr>
                             <tr>
                                 <td><label for="height">Height: </label></td>
-                                <td><input type="number" id="height" value="20" /></td>
+                                <td><input class="dim" type="number" id="height" value="20" /></td>
                             </tr>
                         </tbody>
                     </table>
@@ -52,6 +56,9 @@
                     <div>
                         <input id="json-edit-save" type="button" value="Save" />
                     </div>
+                </div>
+                <div>
+                    <input id="export" type="button" value="Export">
                 </div>
             </div>
         </div>

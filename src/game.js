@@ -227,7 +227,11 @@ function updateLOS() {
 
 // Process key input
 function processInput(d) {
-    if (inputState.evaluate(d3.event.code)) {
+    const key = d3.event.code;
+    // Escape cancels any in-progress sequence.
+    if (key === "Escape") {
+        inputState.reset();
+    } else if (inputState.evaluate(key)) {
         // Redraw map
         update();
     }
@@ -242,6 +246,9 @@ function processInput(d) {
 function requestMove(x, y) {
     var player = gameState.player;
     var currentCell = gameState.mapData[player.y][player.x];
+
+    if (player.health <= 0)     // Player has died
+        return;
 
     var errorMessage = "";//"Can't move in the requested direction";
 
@@ -284,7 +291,8 @@ var possibleDestinations = {
     "¬": pickupItem,
     "/": pickupItem,
     "▾": pickupItem,
-    "õ": pickupItem
+    "õ": pickupItem,
+    "☻": hitMonster
 };
 
 function moveToWall(_, proposedCell) {
@@ -327,6 +335,32 @@ function pickupGold(currentCell, proposedCell) {
         msg.append("span").attr("class", "gold").text(proposedCell.i.quantity);
         msg.append("span").text(" gold");
         proposedCell.i = null;
+    }
+}
+
+function hitMonster(currentCell, proposedCell) {
+    const monsterHealth = proposedCell.i.health;
+    if (proposedCell.i.isDead())
+        return moveToSpace(currentCell, proposedCell);
+
+    //  Monster is definitely still alive...
+    proposedCell.i.takeDamage(gameState.player.damage);
+
+    info("You hit the monster, doing " + (monsterHealth - proposedCell.i.health) + " damage.  " +
+        "(" + proposedCell.i.tt() + ": " + proposedCell.i.health + " remaining)");
+
+    if (proposedCell.i.isDead()) {
+        info("You slay the monster!");
+    }
+    else {
+        if (proposedCell.i.damage > 0) {
+            info("Monster hits you back, doing " + proposedCell.i.damage + " damage!");
+            gameState.player.health -= proposedCell.i.damage;
+
+            if (gameState.player.health <= 0) {
+                error("YOU DIED!");
+            }
+        }
     }
 }
 
