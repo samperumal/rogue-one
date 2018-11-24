@@ -210,7 +210,11 @@ function updateLOS() {
 
 // Process key input
 function processInput(d) {
-    if (inputState.evaluate(d3.event.code)) {
+    const key = d3.event.code;
+    // Escape cancels any in-progress sequence.
+    if (key === "Escape") {
+        inputState.reset();
+    } else if (inputState.evaluate(key)) {
         // Redraw map
         update();
     }
