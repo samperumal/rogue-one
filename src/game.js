@@ -57,9 +57,18 @@ function initialise() {
             y: 0,
             gold: 0,
             items: [],
+            equippedItems: [],
             health: 5,
-            armour: 0,
-            damage: 1
+            baseStats: {
+                armour: 0,
+                damage: 1,
+                visualRange: 10
+            },
+            stats: {
+                armour: 0,
+                damage: 1,
+                visualRange:10
+            }
         },
         // Map data
         mapData: null,
@@ -153,6 +162,14 @@ function draw() {
 function update() {
     var gfx = gameState.gfx;
 
+
+    gameState.player.stats = gameState.player.baseStats;
+    for (const item of gameState.player.equippedItems) {
+        if (item.applyEffect)
+            item.applyEffect(gameState.player.stats);
+    }
+
+
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
         .attr("class", d => d.css())
@@ -170,8 +187,8 @@ function update() {
 
     gfx.gold.text(gameState.player.gold);
     gfx.health.text(gameState.player.health);
-    gfx.armour.text(gameState.player.armour);
-    gfx.damage.text(gameState.player.damage);
+    gfx.armour.text(gameState.player.stats.armour);
+    gfx.damage.text(gameState.player.stats.damage);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
 }
@@ -185,7 +202,7 @@ function updateLOS() {
         gameState.mapArray.forEach(v => v.isVisible = false);
 
         // We only need to consider objects within the visual range
-        const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.settings.visualRange);
+        const objectsInRange = gameState.mapArray.filter(v => stepDistanceBetween(gameState.player, v) <= gameState.player.stats.visualRange);
 
         // isVisible means there is line of sight to the player
         const isVisible = lineOfSightTest(objectsInRange)(gameState.player)
@@ -357,7 +374,7 @@ function pickupItem(currentCell, proposedCell) {
 
         switch (newItem.t()) {
             case "/": // weapon;
-                equipWeapon(newItem);   
+                equipWeapon(newItem);
                 break;
             case "▾": // armour
                 equipArmour(newItem);
@@ -370,15 +387,11 @@ function pickupItem(currentCell, proposedCell) {
 }
 
 function equipArmour(newArmour) {
-    if (newArmour.armour > gameState.player.armour) {
-        gameState.player.armour = newArmour.armour;
-        info("You have equipped the " + newArmour.name)
-    }
+    gameState.player.equippedItems.push(newArmour);
+    info("You have equipped the " + newArmour.name)
 }
 
 function equipWeapon(newWeapon) {
-    if (newWeapon.damage > gameState.player.damage) {
-        gameState.player.damage = newWeapon.damage;
-        info("You have equipped the " + newWeapon.name)
-    }
+    gameState.equippedItems.push(newArmour);
+    info("You have equipped the " + newWeapon.name)
 }

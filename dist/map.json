@@ -21,7 +21,12 @@
     ],
     "▾": [
         { "x": 21, "y": 15, "name": "rags", "armour": 1 },
-        { "x": 21, "y": 3, "name": "scale mail", "armour": 4 }
+        { "x": 21, "y": 3, "name": "scale mail", "armour": 4 },
+        { "x": 21, "y": 14,
+            "type": "bucket_helm",
+            "name": "cursed +1 bucket: helm of limited visibility",
+            "armour":10 
+        }
     ],
     "õ": [
         { "x": 21, "y":7, "colour": "green" }
