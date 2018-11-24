@@ -67,11 +67,7 @@ function initialise() {
                 damage: 1,
                 visualRange: 10
             },
-            stats: {
-                armour: 0,
-                damage: 1,
-                visualRange: 10
-            }
+            stats: {}
         },
         // Map data
         mapData: null,
@@ -165,14 +161,13 @@ function draw() {
 function update() {
     var gfx = gameState.gfx;
 
-
-    gameState.player.stats = gameState.player.baseStats;
+    // Update player stats
+    Object.assign(gameState.player.stats, gameState.player.baseStats);
     for (const key in gameState.player.equippedItems) {
         const item = gameState.player.equippedItems[key];
         if (item && item.applyEffect)
             item.applyEffect(gameState.player.stats);
     }
-
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
@@ -262,7 +257,6 @@ function requestMove(x, y) {
         // Find handler for target destination based on it's displayed symbol
         var action = possibleDestinations[proposedCell.s()];
         if (action != null) {
-            console.log("Processing action");
             action(currentCell, proposedCell);
             errorMessage = "";
         }
@@ -358,8 +352,9 @@ function hitMonster(currentCell, proposedCell) {
     }
     else {
         if (proposedCell.i.damage > 0) {
-            info("Monster hits you back, doing " + proposedCell.i.damage + " damage!");
-            gameState.player.health -= proposedCell.i.damage;
+            const effectiveDamage = Math.max(0, proposedCell.i.damage - gameState.player.stats.armour);
+            info("Monster hits you back, doing " + effectiveDamage+ " damage!");
+            gameState.player.health -= effectiveDamage;
 
             if (gameState.player.health <= 0) {
                 error("YOU DIED!");
@@ -384,8 +379,6 @@ function pickupItem(currentCell, proposedCell) {
                 equipArmour(newItem);
                 break;
         }
-
-        updateStats();
     }
     else {
         info("You already have a " + newItem.tt());
@@ -394,10 +387,10 @@ function pickupItem(currentCell, proposedCell) {
 
 function equipArmour(newArmour) {
     var oldArmour = gameState.player.equippedItems.armour;
-    if (oldArmour == null || newArmour.damage > oldArmour.damage) {
+    //if (oldArmour == null || newArmour.armour > oldArmour.armour) {
         gameState.player.equippedItems.armour = newArmour;
         info("You have equipped the " + newArmour.name);
-    }
+    //}
 }
 
 function equipWeapon(newWeapon) {
@@ -406,14 +399,4 @@ function equipWeapon(newWeapon) {
         gameState.player.equippedItems.weapon = newWeapon;
         info("You have equipped the " + newWeapon.name);
     }
-}
-
-function updateStats() {
-    gameState.player.stats.armour = gameState.player.baseStats.armour;
-    if (gameState.player.equippedItems.armour != null)
-        gameState.player.stats.armour += gameState.player.equippedItems.armour.armour;
-
-    gameState.player.stats.damage = gameState.player.baseStats.damage;
-    if (gameState.player.equippedItems.weapon != null)
-        gameState.player.stats.damage += gameState.player.equippedItems.weapon.damage;
 }
