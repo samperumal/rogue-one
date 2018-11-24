@@ -48,7 +48,7 @@ class monster {
         this.colour = "darkTurquoise";
         this.health = 10;
         this.armour = 0;
-        this.damage = 0;
+        this.damage = 1;
     }
 
     t() { return "☻"; }
