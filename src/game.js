@@ -3,10 +3,18 @@
 import { loadMap, armour, weapon, key } from "./map.ts";
 import { lineOfSightTest } from "./visibility.js";
 import { InputStateMachine, Rule } from "./input.ts";
+import { editor } from "./editor.js";
 
-document.addEventListener("DOMContentLoaded", function () {
+export function launchEditor(){
+    var e = new editor();
+    e.initialise();
+    return e;
+}
+
+export function launchGame(){
     initialise();
-});
+}
+
 
 var gameState = {};
 var inputState = new InputStateMachine([
@@ -43,6 +51,7 @@ var inputState = new InputStateMachine([
 
 // Called on game startup
 function initialise() {
+
     // Setup global game state
     gameState = {
         // Display state

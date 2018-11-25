@@ -1,4 +1,4 @@
-import { Cell, TILES } from "./map.js";
+import { Cell, TILES } from "./map.ts";
 export { editor };
 
 class editor {
