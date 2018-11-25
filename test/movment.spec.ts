@@ -1,5 +1,5 @@
-import { Game } from "../src/game.ts";
-import { parseMap } from "../src/map.ts";
+import { Game } from "../src/game";
+import { parseMap } from "../src/map";
 
 const chamber = [
 `

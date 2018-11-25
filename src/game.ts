@@ -1,6 +1,6 @@
 // To just import everything from all of d3, use this:
 //import * as d3 from "d3";
-import { loadMap, armour, weapon, key } from "./map.ts";
+import { loadMap, armour, weapon, key } from "./map";
 import { lineOfSightTest } from "./visibility.js";
 import { InputStateMachine, Rule } from "./input.js";
 declare const d3: any;

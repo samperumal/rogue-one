@@ -2,6 +2,9 @@ const path = require("path");
 
 module.exports = {
     entry: "./src/game.ts",
+    resolve: {
+        extensions: ['.ts', '.tsx', '.js']
+    },
     module: {
         rules: [
             {

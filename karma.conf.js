@@ -70,6 +70,9 @@ module.exports = function(config) {
     concurrency: Infinity,
 
     webpack: {
+    resolve: {
+        extensions: ['.ts', '.tsx', '.js']
+    },
     module: {
         rules: [
             {
