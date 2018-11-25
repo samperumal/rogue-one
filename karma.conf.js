@@ -36,7 +36,9 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: [
+      'kjhtml',
+      'progress'],
 
 
     // web server port
@@ -70,17 +72,18 @@ module.exports = function(config) {
     concurrency: Infinity,
 
     webpack: {
-    resolve: {
+      mode: 'development',
+      resolve: {
         extensions: ['.ts', '.tsx', '.js']
-    },
-    module: {
+      },
+      module: {
         rules: [
-            {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/
-            }
+          {
+            test: /\.tsx?$/,
+            use: 'ts-loader',
+            exclude: /node_modules/
+          }
         ]
-    }},
+      }},
   })
 }
