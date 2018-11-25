@@ -3,10 +3,17 @@
 import { loadMap, armour, weapon, key } from "./map.ts";
 import { lineOfSightTest } from "./visibility.js";
 import { InputStateMachine, Rule } from "./input.ts";
+import { editor } from "./editor.js";
 
-document.addEventListener("DOMContentLoaded", function () {
-        initialise(loadMap("./map"))
-});
+export function launchEditor(){
+    var e = new editor();
+    e.initialise();
+    return e;
+}
+
+export function launchGame(){
+    initialise(loadMap("./map"))
+}
 
 export const tileAt = (x,y)=>gameState.mapData[y][x];
 

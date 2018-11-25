@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="map.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="editor.css" />
     <script defer src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="../src/map.js" type="module"></script>
+    <script src="main.js"></script>
 </head>
 
 <body>
@@ -64,11 +64,9 @@
         </div>
     </div>
     <script>var editorGlobal = {};</script>
-    <script type="module">
-        import { editor } from "../src/editor.js";
+    <script>
         document.addEventListener("DOMContentLoaded", function () {
-            editorGlobal = new editor();
-            editorGlobal.initialise();
+        editorGlobal = RogueOne.launchEditor();
         });
     </script>
 </body>
