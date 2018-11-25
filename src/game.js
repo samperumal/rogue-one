@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
         initialise(loadMap("./map"))
 });
 
+export const tileAt = (x,y)=>gameState.mapData[y][x];
+
 export var gameState = {};
 var inputState = new InputStateMachine([
     new Rule(key => {

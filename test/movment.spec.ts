@@ -3,7 +3,7 @@ import { parseMap } from "../src/map";
 
 const chamber = [
 `
-####
+#####
 #...#
 #.@.
 #...#
