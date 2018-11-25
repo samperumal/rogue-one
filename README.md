@@ -15,4 +15,7 @@ launch the development server:
 Load http://localhost:9000 in you browser of choice.
 
 
+## Testing
 
+To run test suite:
+> npm test
