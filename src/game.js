@@ -5,10 +5,10 @@ import { lineOfSightTest } from "./visibility.js";
 import { InputStateMachine, Rule } from "./input.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-    initialise();
+    initialise(loadMap("./map"));
 });
 
-var gameState = {};
+export var gameState = {};
 var inputState = new InputStateMachine([
     new Rule(key => {
         switch (key) {
@@ -42,7 +42,7 @@ var inputState = new InputStateMachine([
 ]);
 
 // Called on game startup
-function initialise() {
+export function initialise(mapPromise) {
     // Setup global game state
     gameState = {
         // Display state
@@ -96,7 +96,7 @@ function initialise() {
         .attr("transform", "translate(" + (gameState.gfx.width / 2) + "," + (gameState.gfx.height / 2) + ")");
 
     // Call promise chain to load and draw map from file
-    loadMap("./map")
+    return mapPromise
         .then(map => {
             gameState = { ...gameState, ...map };
             const playerStart = map.mapArray.find(cell => cell.p);
@@ -225,7 +225,7 @@ function updateLOS() {
 }
 
 // Process key input
-function processInput(d) {
+export function processInput(d) {
     const key = d3.event.code;
     // Escape cancels any in-progress sequence.
     if (key === "Escape") {
