@@ -7,6 +7,12 @@
         "jsx": "react",
         "allowJs": true,
         "noImplicitAny": false,
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "lib": [
+            "dom",
+            "scripthost",
+            "es6",
+            "es2016.array.include",
+        ]
     }
 }

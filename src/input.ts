@@ -2,9 +2,9 @@ export { InputStateMachine, Rule };
 
 // A state machine to handle sequences of input keys
 class InputStateMachine {
-    /** @param {Rule[]} rules */
-    constructor(rules) {
-        this.rules = rules;
+    private current: { ruleSet: Rule[], keySequence: string[], context: any };
+
+    constructor(readonly rules: Rule[]) {
         // Current state in the case of multi-key input sequences.
         this.current = {
             ruleSet: rules,
@@ -60,9 +60,13 @@ class InputStateMachine {
     }
 }
 
+type TriggerFunc = (key: string, context: any) => any;
+
 class Rule {
-    /**
-       A trigger is either:
+    private readonly trigger: TriggerFunc;
+
+    /*
+       The trigger is either:
          * A comma-separated list of named keyboard keys accepted by the rule, OR
          * A function which accepts the named pressed key and returns a value indicating acceptance or not
        If the latter, the function can return either:
@@ -73,24 +77,20 @@ class Rule {
        Action is optional and will be invoked on each matching rule in a sequence, not just terminal ones.
        Context returned by previous triggers is untouched if a trigger returns true; to explicitly blank
        context from a trigger function, return null.
-     * @param {string|((key: string) => any)} trigger
-     * @param {Rule[]} childRules
-     * @param {(context: any) => void} action
      */
-    constructor(trigger, childRules, action) {
+    constructor(trigger: string | TriggerFunc, readonly childRules: Rule[], readonly action: (context: any) => void) {
         this.trigger = typeof trigger === "string" ? namedKeyTrigger(trigger) : trigger;
         this.childRules = childRules;
         this.action = action;
 
-        function namedKeyTrigger(targetKeys) {
+        function namedKeyTrigger(targetKeys: string) {
             const keys = targetKeys.split(",").map(s => s.trim());
             // Simple trigger which just returns true or false, with no context
-            return key => keys.includes(key);
+            return (key: string) => keys.includes(key);
         }
     }
 
-    /** @returns {{ match: boolean, context?: any }} */
-    evaluate(key, context) {
+    evaluate(key: string, context?: any) {
         const result = this.trigger(key, context);
         if (typeof result === "boolean") {
             return { match: result };
