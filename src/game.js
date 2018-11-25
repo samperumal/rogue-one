@@ -2,7 +2,7 @@
 //import * as d3 from "d3";
 import { loadMap, armour, weapon, key } from "./map.ts";
 import { lineOfSightTest } from "./visibility.js";
-import { InputStateMachine, Rule } from "./input.js";
+import { InputStateMachine, Rule } from "./input.ts";
 
 document.addEventListener("DOMContentLoaded", function () {
     initialise();

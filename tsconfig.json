@@ -6,6 +6,12 @@
         "target": "es6",
         "jsx": "react",
         "allowJs": true,
-        "noImplicitAny": false
+        "noImplicitAny": false,
+        "lib": [
+            "dom",
+            "scripthost",
+            "es6",
+            "es2016.array.include",
+        ]
     }
 }
