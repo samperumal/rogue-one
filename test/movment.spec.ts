@@ -3,9 +3,9 @@ import { parseMap } from "../src/map";
 
 const chamber = [
 `
-#####
+####
 #...#
-#.@.#
+#.@.
 #...#
 #####`,
 `{}`
@@ -49,5 +49,19 @@ describe("Test chamber 1 - Movement:",()=>{
         processInput("ArrowDown");
         expect([gameState.player.x, gameState.player.y])
             .toEqual([2,4])
+    })
+
+    it('Cannot move into a wall', ()=> {
+        processInput("ArrowDown");
+        processInput("ArrowDown");
+        expect([gameState.player.x, gameState.player.y])
+            .toEqual([2,4])
+    })
+
+    it('Cannot move onto an empty tile', ()=> {
+        processInput("ArrowRight");
+        processInput("ArrowRight");
+        expect([gameState.player.x, gameState.player.y])
+            .toEqual([3,3])
     })
 });
