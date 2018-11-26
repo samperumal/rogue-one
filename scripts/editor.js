@@ -71,16 +71,29 @@ class editor {
 
         this.gfx.svg.attr("viewBox", "0 0 " + (width * this.gfx.cellSize) + " " + (height * this.gfx.cellSize));
 
-        this.mapData = [];
+        let mapData = this.mapData;
+        if (mapData == null) mapData = [];
+
         for (let y = 0; y < height; ++y) {
-            const row = [];
+            if (mapData.length <= y)
+                mapData.push([]);
+            const row = mapData[y];
+
             for (let x = 0; x < width; ++x) {
-                let c = new Cell(x, y);
-                //c.editor = this;
-                row.push(c);
+                if (row.length <= x)
+                    row.push(new Cell(x, y));
+
+                let c = row[x];
+                c.xoff = x * this.gfx.cellSize;
+                c.yoff = y * this.gfx.cellSize;
             }
-            this.mapData.push(row);
+
+            mapData[y] = row.slice(0, width);
         }
+
+        mapData = mapData.slice(0, height);
+
+        this.mapData = mapData;
 
         this.mapArray = this.mapData.reduce((a, b) => a.concat(b), []);
 
