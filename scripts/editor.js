@@ -24,7 +24,7 @@ class editor {
 
     initialise() {
         const editor = this;
-        this.gfx.svg = d3.select("#gfx").attr("viewBox", "0 0 " + (this.gfx.width) + " " + (this.gfx.height));
+        this.gfx.svg = d3.select("#gfx");
         this.gfx.pan = this.gfx.svg.append("g").attr("class", "pan");
         this.gfx.grid = this.gfx.pan.append("g").attr("class", "grid");
 
@@ -55,6 +55,8 @@ class editor {
         const width = +d3.select("#width").property("value");
         const height = +d3.select("#height").property("value");
 
+        this.gfx.svg.attr("viewBox", "0 0 " + (width * this.gfx.cellSize) + " " + (height * this.gfx.cellSize));
+
         this.mapData = [];
         for (let y = 0; y < height; ++y) {
             const row = [];
@@ -73,7 +75,7 @@ class editor {
 
     drawGrid() {
         const cellSize = this.gfx.cellSize;
-        const margin = 0;
+        const margin = 1;
 
         // Clear all existing groups
         this.gfx.grid.selectAll("g.cell").remove();
@@ -105,8 +107,6 @@ class editor {
             .attr("y", margin)
             .attr("width", cellSize - margin)
             .attr("height", cellSize - margin);
-
-
     }
 
     updateGrid() {
