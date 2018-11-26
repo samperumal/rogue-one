@@ -3,3 +3,4 @@ _config.yml
 package*
 dist/main.js
 d3.v5.min.js
+.vscode/settings.json
