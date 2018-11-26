@@ -6,11 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Rogue One Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="map.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="editor.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="styles/main.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="styles/map.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="styles/editor.css" />
     <script defer src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="../src/map.js" type="module"></script>
+    <script src="scripts/editor.js" type="module"></script>
 </head>
 
 <body>
@@ -63,14 +63,6 @@
             </div>
         </div>
     </div>
-    <script>var editorGlobal = {};</script>
-    <script type="module">
-        import { editor } from "../src/editor.js";
-        document.addEventListener("DOMContentLoaded", function () {
-            editorGlobal = new editor();
-            editorGlobal.initialise();
-        });
-    </script>
 </body>
 
 </html>
