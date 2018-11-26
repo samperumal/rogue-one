@@ -26,6 +26,11 @@
             "type": "bucket_helm",
             "name": "cursed +1 bucket: helm of limited visibility",
             "armour":10 
+        },
+        { "x": 20, "y": 11,
+            "type": "vampire_cloak",
+            "name": "Cloak of the Vampire",
+            "damage": 0
         }
     ],
     "õ": [

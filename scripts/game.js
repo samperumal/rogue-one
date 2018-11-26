@@ -1,6 +1,7 @@
-import { loadMap, baseArmour, bucketHelm, weapon, key } from "./map.js";
+import { loadMap } from "./map.js";
 import { lineOfSightTest } from "./visibility.js";
 import { InputStateMachine, Rule } from "./input.js";
+import * as Events from "./events.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     initialise();
@@ -161,11 +162,8 @@ function update() {
 
     // Update player stats
     Object.assign(gameState.player.stats, gameState.player.baseStats);
-    for (const key in gameState.player.equippedItems) {
-        const item = gameState.player.equippedItems[key];
-        if (item && item.applyEffect)
-            item.applyEffect(gameState.player.stats);
-    }
+
+    dispatchEvent(Events.turnStart());
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
@@ -269,7 +267,7 @@ function error(msg) {
     d3.select("#log").insert("div", ":first-child").attr("class", "error").text(msg);
 }
 
-function info(msg) {
+export function info(msg) {
     d3.select("#log").insert("div", ":first-child").attr("class", "info").text(msg);
 }
 
@@ -340,6 +338,9 @@ function hitMonster(currentCell, proposedCell) {
         return moveToSpace(currentCell, proposedCell);
 
     //  Monster is definitely still alive...
+    var damage = proposedCell.i.effectiveDamage(gameState.player.stats.damage);
+    dispatchEvent(Events.playerDamagesMonster(proposedCell.i,damage));
+
     proposedCell.i.takeDamage(gameState.player.stats.damage);
 
     info("You hit the monster, doing " + (monsterHealth - proposedCell.i.health) + " damage.  " +
@@ -396,5 +397,31 @@ function equipWeapon(newWeapon) {
     if (oldWeapon == null || newWeapon.damage > oldWeapon.damage) {
         gameState.player.equippedItems.weapon = newWeapon;
         info("You have equipped the " + newWeapon.name);
+    }
+}
+
+export function addArmour(value){
+    gameState.player.stats.armour+=value;
+}
+
+export function addDamage(value){
+    gameState.player.stats.damage+=value;
+}
+
+export function setVisualRange(value){
+    gameState.player.stats.visualRange=value;
+}
+
+export function healPlayer(value){
+    gameState.player.health+=value;
+    dispatchEvent(Events.playerHealed(value));
+}
+
+// dispatch event to all equipment
+function dispatchEvent(event) {
+    for (const key in gameState.player.equippedItems) {
+        const item = gameState.player.equippedItems[key];
+        if (item && item.applyEffect)
+            item.applyEffect(event,gameState);
     }
 }

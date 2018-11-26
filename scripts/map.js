@@ -1,4 +1,5 @@
 export { loadMap, Cell, TILES, key, baseArmour, bucketHelm, weapon };
+import {addArmour, addDamage,setVisualRange, healPlayer, info} from "./game.js";
 
 async function loadMap(url) {
     const downloads = [d3.text(url + ".txt"), d3.json(url + ".json")];
@@ -52,9 +53,13 @@ class monster {
         return this.colour + " blob";
     }
 
+    effectiveDamage(d){
+        var unblockedDamage = Math.max(1, d - this.armour); // Minimum damage of 1
+        return Math.min(d, this.health); // can't damage more than available health
+    }
+
     takeDamage(d) {
-        this.health -= Math.max(1, d - this.armour); // Minimum damage of 1
-        this.health = Math.max(0, this.health); // Non-negative health
+        this.health-=this.effectiveDamage(d);
         if (this.health <= 0) {
             this.colour = "dead";
         }
@@ -127,8 +132,11 @@ class weapon {
         return "weapon (" + this.name + ")";
     }
 
-    applyEffect(playerStats) {
-        playerStats.damage += this.damage;
+    applyEffect(event) {
+        switch (event.type) {
+        case "turnStart": addDamage(this.damage);
+        default: return;
+        }
     }
 }
 
@@ -146,10 +154,14 @@ class baseArmour {
         return "armour (" + this.name + ")";
     }
 
-    applyEffect(playerStats) {
-        playerStats.armour += this.armour;
+    applyEffect(event) {
+        switch (event.type) {
+        case "turnStart": return addArmour(this.armour);
+        default: return;
+        }
     }
 }
+
 
 class bucketHelm {
     constructor() {
@@ -165,10 +177,38 @@ class bucketHelm {
         return "armour (" + this.name + ")";
     }
 
-    applyEffect(playerStats) {
-        playerStats.visualRange = 0;
-        playerStats.armour += this.armour;
+    applyEffect(event) {
+        switch (event.type) {
+        case "turnStart": 
+            setVisualRange(0);
+            addArmour(this.armour);
+        break;
+        default: return;
+    }}
+}
+
+class vampireCloak {
+    constructor() {
+        this.type = "vampire_cloak";
+        this.name = "Cloak of the Vampire";
+        this.armour = 0;
     }
+
+    t() {
+        return "▾";
+    }
+    tt() {
+        return "armour (" + this.name + ")";
+    }
+
+    applyEffect(event) {
+        switch (event.type) {
+        case "playerDamagesMonster": 
+            info("You suck "+event.damage+" health from the monster");
+            healPlayer(event.damage);
+        break;
+        default: return;
+    }}
 }
 
 // Known tile types
@@ -186,6 +226,8 @@ const TILES = {
             switch (v.type) {
                 case "bucket_helm":
                     return new bucketHelm();
+                case "vampire_cloak":
+                    return new vampireCloak();
                 default:
                     return new baseArmour();
             }
