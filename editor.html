@@ -28,7 +28,14 @@
                             <tr>
                                 <td><label for="name">Name:</label></td>
                                 <td><input type="text" id="name"></td>
-                                <td><input id="export" type="button" value="Export"></td>
+                                <td><input id="showFileMgr" type="button" value="V"></td>
+                            </tr>
+                            <tr class="file-mgr">
+                                <td colspan="3">
+                                    <input id="saveLocal" type="button" value="Save to local storage" />
+                                    <input id="loadLocal" type="button" value="Load from local storage" />
+                                    <input id="download" type="button" value="Download" />
+                                </td>
                             </tr>
                             <tr>
                                 <td><label for="width">Width: </label></td>
@@ -38,6 +45,7 @@
                             <tr>
                                 <td><label for="height">Height: </label></td>
                                 <td><input class="dim" type="number" id="height" value="20" /></td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>
@@ -61,7 +69,7 @@
                     </div>
                 </div>
                 <div>
-                    
+
                 </div>
             </div>
         </div>

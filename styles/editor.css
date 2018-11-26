@@ -54,3 +54,17 @@ select, option {
 .cellbg:hover {
     stroke: white;
 }
+
+tr.file-mgr td {
+    text-align: center;
+}
+
+.file-mgr input {    
+    margin: 0.5em 0;
+    width: auto;    
+    display: none;    
+}
+
+.file-mgr  {
+    background-color: darkolivegreen;
+}

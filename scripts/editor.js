@@ -16,7 +16,7 @@ class editor {
             height: 500
         };
 
-        this.name = "untitled";
+        this.name = "MyMap";
         this.mapData = [];
         this.mapArray = [];
 
@@ -47,12 +47,19 @@ class editor {
 
         d3.select("#name")
             .property("value", this.name)
-            .on("change", function() {
+            .on("change", function () {
                 editor.name = this.value;
             });
 
-        d3.select("#export").on("click", this.export.bind(this));
-        d3.select("#recreate").on("click", (() => { this.createGrid(); this.updateGrid(); }).bind(this));
+        d3.select("#showFileMgr").on("click", this.showFileMgr.bind(this));
+        d3.select("#saveLocal").on("click", this.saveLocal.bind(this));
+        d3.select("#loadLocal").on("click", this.loadLocal.bind(this));
+        d3.select("#download").on("click", this.download.bind(this));
+
+        d3.select("#recreate").on("click", function () {
+            this.createGrid();
+            this.updateGrid();
+        }.bind(this));
 
         this.createGrid();
 
@@ -68,8 +75,6 @@ class editor {
     createGrid() {
         const width = +d3.select("#width").property("value");
         const height = +d3.select("#height").property("value");
-
-        this.gfx.svg.attr("viewBox", "0 0 " + (width * this.gfx.cellSize) + " " + (height * this.gfx.cellSize));
 
         let mapData = this.mapData;
         if (mapData == null) mapData = [];
@@ -95,17 +100,22 @@ class editor {
 
         this.mapData = mapData;
 
-        this.mapArray = this.mapData.reduce((a, b) => a.concat(b), []);
-
         this.drawGrid();
     }
 
     drawGrid() {
+        const width = +d3.select("#width").property("value");
+        const height = +d3.select("#height").property("value");
+
+        this.gfx.svg.attr("viewBox", "0 0 " + (width * this.gfx.cellSize) + " " + (height * this.gfx.cellSize));
+
         const cellSize = this.gfx.cellSize;
         const margin = 1;
 
         // Clear all existing groups
         this.gfx.grid.selectAll("g.cell").remove();
+
+        this.mapArray = this.mapData.reduce((a, b) => a.concat(b), []);
 
         const cells = this.gfx.grid.selectAll("g.cell")
             .data(this.mapArray);
@@ -114,6 +124,7 @@ class editor {
         const newCells = cells.enter()
             .append("g")
             .attr("class", "cell")
+            .each(d => Object.setPrototypeOf(d, new Cell))
             .attr("transform", d => "translate(" + (d.x * cellSize) + "," + (d.y * cellSize) + ")")
             .on("mouseenter", this.cellMouseEnter)
             .on("click", this.cellClick.bind(this))
@@ -184,7 +195,35 @@ class editor {
         this.updateGrid();
     }
 
-    export() {
+    showFileMgr() {
+        d3.selectAll(".file-mgr input").style("display", "inherit");
+    }
+
+    saveLocal() {
+        localStorage.setItem("mapData", JSON.stringify(this.mapData));
+
+        localStorage.setItem("width", d3.select("#width").property("value"));
+        localStorage.setItem("height", d3.select("#height").property("value"));
+
+    }
+
+    loadLocal() {
+        const mapData = localStorage.getItem("mapData");
+        const width = localStorage.getItem("width");
+        const height = localStorage.getItem("height");
+
+        if (mapData != null) {
+            this.mapData = JSON.parse(mapData);
+
+            d3.select("#width").property("value", width);
+            d3.select("#height").property("value", height);
+
+            this.drawGrid();
+            this.updateGrid();
+        }
+    }
+
+    download() {
         editorExport(this.name, this.mapData, TILES);
     }
 }
