@@ -18,14 +18,36 @@
             <svg id="gfx" preserveAspectRatio="xMidYMid"></svg>
         </div>
         <div class="status-bar">
-            <div id="inventory-heading">Inventory</div>
-            <div id="inventory"></div>
             <div>
-                <div>Gold: <span id="gold">0</span></div>
-                <div>Health: <span id="health">0</span></div>
-                <div>Armour: <span id="armourlevel">0</span></div>
-                <div>Weapon: <span id="weaponLevel">0</span></div>
+                <h2>Vitalstatistix</h2>
+                <table align="center" id="statstable">
+                    <tr>
+                        <td>Health:</td>
+                        <td ><text id="health">10</text>/<text id="maxHealth">10</text></td>
+                    </tr>
+                    <tr>
+                        <td>Foobar:</td>
+                        <td><text id="foobar">0</text>/<text id="maxFoobar">12</text></td>
+                    </tr>
+                    <tr/>
+                    <tr>
+                        <td>Armour:</td>
+                        <td><text id="armourlevel">0</td>
+                    </tr>
+                    <tr>
+                        <td>Weapon:</td>
+                        <td><text id="weaponLevel">0</td>
+                    </tr>
+                    <tr/>
+                    <tr>
+                        <td>Gold:</td>
+                        <td><text id="gold">0</text></td>
+                    </tr>
+                </table>                        
             </div>
+
+            <h2>Inventory</h2>
+            <div id="inventory"></div>
             <div>
                 <h3>Settings</h3>
                 <div>
