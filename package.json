@@ -3,11 +3,8 @@
   "version": "1.0.0",
   "description": "Javascript Rogue clone",
   "private": true,
-  "main": "./src/game.js",
+  "main": "./game.js",
   "scripts": {
-    "webpack-dev": "webpack --mode development",
-    "webpack-prod": "webpack --mode production",
-    "start": "webpack-dev-server -d"
   },
   "repository": {
     "type": "git",
@@ -18,8 +15,6 @@
   "license": "ISC",
   "devDependencies": {
     "@types/d3": "^5.0.1",
-    "ts-loader": "^5.3.0",
-    "typescript": "^3.1.6",
     "webpack": "^4.26.0",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10"
