@@ -1,6 +1,12 @@
 import { Cell, TILES } from "./map.js";
 export { editor };
 
+let editorGlobal;
+document.addEventListener("DOMContentLoaded", function () {
+    editorGlobal = new editor();
+    editorGlobal.initialise();
+});
+
 class editor {
     constructor() {
         this.gfx = {
