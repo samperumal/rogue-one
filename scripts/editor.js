@@ -197,7 +197,7 @@ class editor {
 
         function serializeMapItems(rows) {
             const tiles = Object.keys(TILES);
-            const allItems = Array.concat(...rows.map(row => {
+            const allItems = [].concat(...rows.map(row => {
                 return row
                     // Choose only those cells which have items, and record their tile, position and properties
                     .filter(cell => cell.i)
@@ -244,6 +244,7 @@ class editor {
 
         // On Firefox at least, invalid characters in the filename get converted to underscores
         function exportFile(filename, mimeType, contents) {
+            console.log(filename);
             const a = document.createElement("a");
             const blob = new Blob([contents], { type: mimeType });
             const url = URL.createObjectURL(blob);
