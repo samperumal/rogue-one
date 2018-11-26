@@ -97,17 +97,14 @@ class editor {
         const cells = this.gfx.grid.selectAll("g.cell")
             .data(this.mapArray);
 
-        const obj = this;
-
         // Create new groups and populate with contents
         const newCells = cells.enter()
             .append("g")
             .attr("class", "cell")
             .attr("transform", d => "translate(" + (d.x * cellSize) + "," + (d.y * cellSize) + ")")
             .on("mouseenter", this.cellMouseEnter)
-            // Necessary to maintain parent reference across events)
-            .on("click", d => obj.cellClick(d))
-            .on("dblclick", d => obj.cellDoubleClick(d));
+            .on("click", this.cellClick.bind(this))
+            .on("dblclick", this.cellDoubleClick.bind(this));
 
         newCells
             .append("text")
@@ -160,9 +157,7 @@ class editor {
 
     editSaveClick() {
         let json = d3.select("#json-edit-text").property("value");
-        console.log(json);
         let data = JSON.parse(json);
-        console.log(data);
 
         if (data.i) {
             Object.setPrototypeOf(data.i, this.editedCell.i);
@@ -170,7 +165,6 @@ class editor {
         }
 
         d3.select("#json-edit-text").property("value", "");
-
         d3.select("#json-properties-div").classed("hidden-edit", false);
         d3.select("#json-edit-div").classed("hidden-edit", true);
 
