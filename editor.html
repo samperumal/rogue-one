@@ -13,9 +13,9 @@
     <script src="scripts/editor.js" type="module"></script>
 </head>
 
-<body>
+<body style="display: none;">
     <div class="main-col" style="width:100%">
-        <div class="game-grid" style="width:80%; float: left">
+        <div class="game-grid" style="width:80%; float: left;">
             <svg id="gfx" preserveAspectRatio="xMidYMid meet"></svg>
         </div>
 
@@ -33,6 +33,7 @@
                             <tr>
                                 <td><label for="width">Width: </label></td>
                                 <td><input class="dim" type="number" id="width" value="20" /></td>
+                                <td rowspan="2"><input id="recreate" type="button" value="Resize" /></td>
                             </tr>
                             <tr>
                                 <td><label for="height">Height: </label></td>

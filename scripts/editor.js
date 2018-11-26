@@ -11,8 +11,8 @@ class editor {
     constructor() {
         this.gfx = {
             cellSize: 25,
-            width: 1200,
-            height: 450
+            width: 1000,
+            height: 500
         };
 
         this.name = "untitled";
@@ -45,10 +45,13 @@ class editor {
             });
 
         d3.select("#export").on("click", this.export.bind(this));
+        d3.select("#recreate").on("click", (() => { this.createGrid(); this.updateGrid(); }).bind(this));
 
         this.createGrid();
 
         this.updateGrid();
+
+        d3.select("body").style("display", "");
     }
 
     createGrid() {
