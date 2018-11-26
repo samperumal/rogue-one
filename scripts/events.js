@@ -1,3 +1,7 @@
+// Events describe the various things that happen during the turn 
+// These provide an entry point for equipment, status effetcs etc.
+// to apply their changes to the game logic
+
 export const turnStart = () => ({
         type: "turnStart"
     });

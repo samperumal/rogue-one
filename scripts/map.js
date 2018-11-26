@@ -187,6 +187,8 @@ class bucketHelm {
     }}
 }
 
+// Varpire Cloak : Applies life steal when the player damages a monster
+// (as an example of equipment applying it's effect on different game events)
 class vampireCloak {
     constructor() {
         this.type = "vampire_cloak";
@@ -201,11 +203,12 @@ class vampireCloak {
         return "armour (" + this.name + ")";
     }
 
+    // apply the effects that occur while this item is equipped
     applyEffect(event) {
         switch (event.type) {
-        case "playerDamagesMonster": 
-            info("You suck "+event.damage+" health from the monster");
-            healPlayer(event.damage);
+        case "playerDamagesMonster":  // When the player damages a monster
+            info("You suck "+event.damage+" health from the monster"); 
+            healPlayer(event.damage); // Heal the player
         break;
         default: return;
     }}
