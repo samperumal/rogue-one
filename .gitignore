@@ -2,3 +2,4 @@ node_modules
 _config.yml
 package*
 dist/main.js
+d3.v5.min.js

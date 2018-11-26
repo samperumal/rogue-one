@@ -23,8 +23,14 @@ class editor {
     }
 
     initialise() {
-        const editor = this;
-        this.gfx.svg = d3.select("#gfx");
+        this.gfx.zoom = d3.zoom()
+            .scaleExtent([0.5, 3])
+            .on("zoom", this.zoomed.bind(this));
+
+        this.gfx.svg = d3.select("#gfx")
+            .call(this.gfx.zoom)
+            .on("dblclick.zoom", null);
+
         this.gfx.pan = this.gfx.svg.append("g").attr("class", "pan");
         this.gfx.grid = this.gfx.pan.append("g").attr("class", "grid");
 
@@ -52,6 +58,10 @@ class editor {
         this.updateGrid();
 
         d3.select("body").style("display", "");
+    }
+
+    zoomed() {
+        this.gfx.pan.attr("transform", d3.event.transform);
     }
 
     createGrid() {
