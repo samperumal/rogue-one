@@ -200,27 +200,31 @@ class editor {
     }
 
     saveLocal() {
-        localStorage.setItem("mapData", JSON.stringify(this.mapData));
-
-        localStorage.setItem("width", d3.select("#width").property("value"));
-        localStorage.setItem("height", d3.select("#height").property("value"));
-
+        if (typeof (Storage) !== "undefined") {
+            localStorage.setItem("mapData", JSON.stringify(this.mapData));
+            localStorage.setItem("width", d3.select("#width").property("value"));
+            localStorage.setItem("height", d3.select("#height").property("value"));
+        }
+        else console.log("Local Storage not supported!");
     }
 
     loadLocal() {
-        const mapData = localStorage.getItem("mapData");
-        const width = localStorage.getItem("width");
-        const height = localStorage.getItem("height");
+        if (typeof (Storage) !== "undefined") {
+            const mapData = localStorage.getItem("mapData");
+            const width = localStorage.getItem("width");
+            const height = localStorage.getItem("height");
 
-        if (mapData != null) {
-            this.mapData = JSON.parse(mapData);
+            if (mapData != null) {
+                this.mapData = JSON.parse(mapData);
 
-            d3.select("#width").property("value", width);
-            d3.select("#height").property("value", height);
+                d3.select("#width").property("value", width);
+                d3.select("#height").property("value", height);
 
-            this.drawGrid();
-            this.updateGrid();
+                this.drawGrid();
+                this.updateGrid();
+            }
         }
+        else console.log("Local Storage not supported!");
     }
 
     download() {
