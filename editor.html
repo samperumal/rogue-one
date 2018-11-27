@@ -13,37 +13,43 @@
     <script src="scripts/editor.js" type="module"></script>
 </head>
 
-<body>
+<body style="display: none;">
     <div class="main-col" style="width:100%">
-        <div class="game-grid" style="width:80%; float: left">
-            <svg id="gfx" preserveAspectRatio="xMidYMid"></svg>
+        <div class="game-grid" style="width:80%; float: left;">
+            <svg id="gfx" preserveAspectRatio="xMidYMid meet"></svg>
         </div>
 
         <div class="status-bar">
             <div>
                 <h3>Settings</h3>
-                <div class="settings">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td><label for="name">Name:</label></td>
-                                <td><input type="text" id="name"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="width">Width: </label></td>
-                                <td><input class="dim" type="number" id="width" value="20" /></td>
-                            </tr>
-                            <tr>
-                                <td><label for="height">Height: </label></td>
-                                <td><input class="dim" type="number" id="height" value="20" /></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="settings">
+                    <div style="text-align: right;"><label for="name">Name:</label></div>
+                    <div style="text-align: left;"><input type="text" id="name"></div>                    
+                    <!-- <div><input id="download" type="button" value="Download" /></div> -->
+                    <div>
+                        <img id="saveLocal" src="img/save.png" class="file-icon" title="Save to local storage" />
+                        <img id="loadLocal" src="img/load.png" class="file-icon" title="Load from local storage" />
+                        <img id="download" src="img/download.png" class="file-icon" title="Download to local machine" />
+                    </div>
+
+                    <div style="text-align: right;"><label for="width">Width: </label></div>
+                    <div style="text-align: left;"><input class="dim" type="number" id="width" value="40" /></div>
+                    <div style="grid-row: span 2; margin-top: auto; margin-bottom: auto;"><input id="recreate" type="button" value="Resize" /></div>
+                    
+                    <div style="text-align: right;"><label for="height">Height: </label></div>
+                    <div style="text-align: left;"><input class="dim" type="number" id="height" value="20" /></div>
+
+                    
+
+                    <!-- <div><input id="saveLocal" type="button" value="Save to local storage" /></div> -->
+                    <!-- <div><input id="loadLocal" type="button" value="Load from local storage" /></div> -->
+                    
+                    
                 </div>
-                <div>
-                    <select id="tile">
-                    </select>
+                <h3>Tiles</h3>
+                <div id="tiles">
                 </div>
+                <h3>Properties</h3>
                 <div id="json-properties-div">
                     <pre id="json-properties">
 
@@ -58,7 +64,7 @@
                     </div>
                 </div>
                 <div>
-                    <input id="export" type="button" value="Export">
+
                 </div>
             </div>
         </div>

@@ -1,4 +1,5 @@
 import { Cell, TILES } from "./map.js";
+import { editorExport } from "./editorExport.js";
 export { editor };
 
 let editorGlobal;
@@ -11,11 +12,11 @@ class editor {
     constructor() {
         this.gfx = {
             cellSize: 25,
-            width: 1200,
-            height: 450
+            width: 1000,
+            height: 500
         };
 
-        this.name = "untitled";
+        this.name = "MyMap";
         this.mapData = [];
         this.mapArray = [];
 
@@ -23,75 +24,122 @@ class editor {
     }
 
     initialise() {
-        const editor = this;
-        this.gfx.svg = d3.select("#gfx").attr("viewBox", "0 0 " + (this.gfx.width) + " " + (this.gfx.height));
+        this.gfx.zoom = d3.zoom()
+            .scaleExtent([0.5, 3])
+            .on("zoom", this.zoomed.bind(this));
+
+        this.gfx.svg = d3.select("#gfx")
+            .call(this.gfx.zoom)
+            .on("dblclick.zoom", null);
+
         this.gfx.pan = this.gfx.svg.append("g").attr("class", "pan");
         this.gfx.grid = this.gfx.pan.append("g").attr("class", "grid");
 
-        d3.select("#tile")
-            .selectAll("option")
+        d3.select("#tiles")
+            .on("click", this.selectTile.bind(this), { capture: true })
+            .selectAll("div.tile")
             .data(Object.entries(TILES).filter(d => d[0] != "" && d[0] != " "))
             .enter()
-            .append("option")
-            .attr("value", d => d[0])
+            .append("div")
+            .attr("data-tile", d => d[0])
+            .classed("tile", true)
             .text(d => d[0] + " [" + d[1].tt + "]");
 
         d3.select("#json-edit-save").on("click", () => this.editSaveClick());
 
         d3.select("#name")
             .property("value", this.name)
-            .on("change", function() {
+            .on("change", function () {
                 editor.name = this.value;
             });
 
-        d3.select("#export").on("click", this.export.bind(this));
+        d3.select("#saveLocal").on("click", this.saveLocal.bind(this));
+        d3.select("#loadLocal").on("click", this.loadLocal.bind(this));
+        d3.select("#download").on("click", this.download.bind(this));
+
+        d3.select("#recreate").on("click", function () {
+            this.createGrid();
+            this.updateGrid();
+        }.bind(this));
 
         this.createGrid();
 
         this.updateGrid();
+
+        d3.select("body").style("display", "");
+    }
+
+    selectTile() {
+        const target = d3.event.target;
+        const tile = target.dataset.tile;
+        if (!tile || target.classList.contains("selected")) return;
+        d3.select("#tiles")
+            .selectAll("div.tile")
+            .classed("selected", false);
+        target.classList.add("selected");
+    }
+
+    zoomed() {
+        this.gfx.pan.attr("transform", d3.event.transform);
     }
 
     createGrid() {
         const width = +d3.select("#width").property("value");
         const height = +d3.select("#height").property("value");
 
-        this.mapData = [];
+        let mapData = this.mapData;
+        if (mapData == null) mapData = [];
+
         for (let y = 0; y < height; ++y) {
-            const row = [];
+            if (mapData.length <= y)
+                mapData.push([]);
+            const row = mapData[y];
+
             for (let x = 0; x < width; ++x) {
-                let c = new Cell(x, y);
-                //c.editor = this;
-                row.push(c);
+                if (row.length <= x)
+                    row.push(new Cell(x, y));
+
+                let c = row[x];
+                c.xoff = x * this.gfx.cellSize;
+                c.yoff = y * this.gfx.cellSize;
             }
-            this.mapData.push(row);
+
+            mapData[y] = row.slice(0, width);
         }
 
-        this.mapArray = this.mapData.reduce((a, b) => a.concat(b), []);
+        mapData = mapData.slice(0, height);
+
+        this.mapData = mapData;
 
         this.drawGrid();
     }
 
     drawGrid() {
+        const width = +d3.select("#width").property("value");
+        const height = +d3.select("#height").property("value");
+
+        this.gfx.svg.attr("viewBox", "0 0 " + (width * this.gfx.cellSize) + " " + (height * this.gfx.cellSize));
+
         const cellSize = this.gfx.cellSize;
-        const margin = 0;
+        const margin = 1;
 
         // Clear all existing groups
         this.gfx.grid.selectAll("g.cell").remove();
 
+        this.mapArray = this.mapData.reduce((a, b) => a.concat(b), []);
+
         const cells = this.gfx.grid.selectAll("g.cell")
             .data(this.mapArray);
-
-        const obj = this;
 
         // Create new groups and populate with contents
         const newCells = cells.enter()
             .append("g")
             .attr("class", "cell")
+            .each(d => Object.setPrototypeOf(d, new Cell))
             .attr("transform", d => "translate(" + (d.x * cellSize) + "," + (d.y * cellSize) + ")")
             .on("mouseenter", this.cellMouseEnter)
-            // Necessary to maintain parent reference across events)
-            .on("click", d => obj.cellClick(d))
-            .on("dblclick", d => obj.cellDoubleClick(d));
+            .on("click", this.cellClick.bind(this))
+            .on("dblclick", this.cellDoubleClick.bind(this));
 
         newCells
             .append("text")
@@ -105,8 +153,6 @@ class editor {
             .attr("y", margin)
             .attr("width", cellSize - margin)
             .attr("height", cellSize - margin);
-
-
     }
 
     updateGrid() {
@@ -122,7 +168,9 @@ class editor {
     }
 
     cellClick(data) {
-        let selection = d3.select("#tile").node().value;
+        const selectedTile = d3.select("#tiles div.tile.selected").node();
+        if (!selectedTile) return;
+        const selection = selectedTile.dataset.tile;
 
         if (TILES[selection].proto != null) {
             data.i = TILES[selection].proto();
@@ -146,9 +194,7 @@ class editor {
 
     editSaveClick() {
         let json = d3.select("#json-edit-text").property("value");
-        console.log(json);
         let data = JSON.parse(json);
-        console.log(data);
 
         if (data.i) {
             Object.setPrototypeOf(data.i, this.editedCell.i);
@@ -156,93 +202,41 @@ class editor {
         }
 
         d3.select("#json-edit-text").property("value", "");
-
         d3.select("#json-properties-div").classed("hidden-edit", false);
         d3.select("#json-edit-div").classed("hidden-edit", true);
 
         this.updateGrid();
     }
 
-    export() {
-        exportFile(this.name + ".txt", "text/plain", serializeMap(this.mapData));
-        exportFile(this.name + ".json", "text/plain", serializeMapItems(this.mapData));
-
-        function serializeMap(rows) {
-            return rows.map(serializeMapRow).join("\r\n");
+    saveLocal() {
+        if (typeof (Storage) !== "undefined") {
+            localStorage.setItem("mapData", JSON.stringify(this.mapData));
+            localStorage.setItem("width", d3.select("#width").property("value"));
+            localStorage.setItem("height", d3.select("#height").property("value"));
         }
+        else console.log("Local Storage not supported!");
+    }
 
-        function serializeMapRow(cells) {
-            // Convert each cell object to its tile
-            return cells
-                .map(function (cell) {
-                    return !cell.t || cell.t === "rock"
-                        ? " "
-                        : findKeyByValue(TILES, tile => tile.tt === cell.tt);
-                })
-                .join("");
-        }
+    loadLocal() {
+        if (typeof (Storage) !== "undefined") {
+            const mapData = localStorage.getItem("mapData");
+            const width = localStorage.getItem("width");
+            const height = localStorage.getItem("height");
 
-        function serializeMapItems(rows) {
-            const tiles = Object.keys(TILES);
-            const allItems = Array.concat(...rows.map(row => {
-                return row
-                    // Choose only those cells which have items, and record their tile, position and properties
-                    .filter(cell => cell.i)
-                    .map(cell => ({ t: cell.t, x: cell.x, y: cell.y, props: {...cell.i}, toJSON: serializeItem }));
-            }));
+            if (mapData != null) {
+                this.mapData = JSON.parse(mapData);
 
-            // Sort by tile then y then x
-            allItems.sort(function (a, b) {
-                const tileA = tiles.indexOf(a.t);
-                const tileB = tiles.indexOf(b.t);
-                if (tileA !== tileB) return tileA - tileB;
-                if (a.y !== b.y) return a.y - b.y;
-                return a.x - b.x;
-            });
+                d3.select("#width").property("value", width);
+                d3.select("#height").property("value", height);
 
-            // Put each group of the same item in a separate array, and put all the arrays in an object with arrays indexed by tile
-            // This is the map.json format
-            const allGroups = allItems.reduce(function(groups, item) {
-                const group = groups[item.t] || (groups[item.t] = []);
-                group.push(item);
-                return groups;
-            }, {});
-
-            // stringify produces line feeds only, so make the result Windows-friendly
-            return JSON
-                .stringify(allGroups, null, 4)
-                .replace(/\n/g, "\r\n");
-
-            // Function used to stringify an item
-            // Omit the t value, and hopefully output x and y before any item-specific properties, though technically this isn't guaranteed
-            function serializeItem() {
-                return {
-                    x: this.x,
-                    y: this.y,
-                    ...this.props
-                }
+                this.drawGrid();
+                this.updateGrid();
             }
         }
+        else console.log("Local Storage not supported!");
+    }
 
-        // Find the first property name whose value matches a predicate
-        function findKeyByValue(obj, valuePredicate) {
-            return Object.keys(obj).find(key => valuePredicate(obj[key]));
-        }
-
-        // On Firefox at least, invalid characters in the filename get converted to underscores
-        function exportFile(filename, mimeType, contents) {
-            const a = document.createElement("a");
-            const blob = new Blob([contents], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            a.style = "display: none";
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            // Suggestions online that these 2 lines should be wrapped in a setTimeout(..., 0)
-            // or it breaks on Firefox, but that doesn't seem to be the case.
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
+    download() {
+        editorExport(this.name, this.mapData, TILES);
     }
 }
