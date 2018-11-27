@@ -35,12 +35,14 @@ class editor {
         this.gfx.pan = this.gfx.svg.append("g").attr("class", "pan");
         this.gfx.grid = this.gfx.pan.append("g").attr("class", "grid");
 
-        d3.select("#tile")
-            .selectAll("option")
+        d3.select("#tiles")
+            .on("click", this.selectTile.bind(this), { capture: true })
+            .selectAll("div.tile")
             .data(Object.entries(TILES).filter(d => d[0] != "" && d[0] != " "))
             .enter()
-            .append("option")
-            .attr("value", d => d[0])
+            .append("div")
+            .attr("data-tile", d => d[0])
+            .classed("tile", true)
             .text(d => d[0] + " [" + d[1].tt + "]");
 
         d3.select("#json-edit-save").on("click", () => this.editSaveClick());
@@ -66,6 +68,16 @@ class editor {
         this.updateGrid();
 
         d3.select("body").style("display", "");
+    }
+
+    selectTile() {
+        const target = d3.event.target;
+        const tile = target.dataset.tile;
+        if (!tile || target.classList.contains("selected")) return;
+        d3.select("#tiles")
+            .selectAll("div.tile")
+            .classed("selected", false);
+        target.classList.add("selected");
     }
 
     zoomed() {
@@ -157,7 +169,9 @@ class editor {
     }
 
     cellClick(data) {
-        let selection = d3.select("#tile").node().value;
+        const selectedTile = d3.select("#tiles div.tile.selected").node();
+        if (!selectedTile) return;
+        const selection = selectedTile.dataset.tile;
 
         if (TILES[selection].proto != null) {
             data.i = TILES[selection].proto();

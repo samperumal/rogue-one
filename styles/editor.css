@@ -17,9 +17,27 @@ div.hidden-edit {
     margin: 1em;
 }
 
-#tile {
-    width: 90%;
-    margin: 1em;
+#tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(75px, auto));
+    grid-auto-rows: minmax(25px, 1fr);
+    column-gap: 5px;
+    row-gap: 5px;
+}
+
+#tiles div.tile {
+    text-align: left;
+}
+
+#tiles div.tile:hover {
+    color: black;
+    background-color: white;
+}
+
+#tiles div.tile.selected {
+    font-weight: bold;
+    color: black;
+    background-color: white;
 }
 
 select, option {    
