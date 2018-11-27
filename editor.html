@@ -13,10 +13,10 @@
     <script src="scripts/editor.js" type="module"></script>
 </head>
 
-<body>
+<body style="display: none;">
     <div class="main-col" style="width:100%">
-        <div class="game-grid" style="width:80%; float: left">
-            <svg id="gfx" preserveAspectRatio="xMidYMid"></svg>
+        <div class="game-grid" style="width:80%; float: left;">
+            <svg id="gfx" preserveAspectRatio="xMidYMid meet"></svg>
         </div>
 
         <div class="status-bar">
@@ -28,18 +28,29 @@
                             <tr>
                                 <td><label for="name">Name:</label></td>
                                 <td><input type="text" id="name"></td>
+                                <td><input id="showFileMgr" type="button" value="V"></td>
+                            </tr>
+                            <tr class="file-mgr">
+                                <td colspan="3">
+                                    <input id="saveLocal" type="button" value="Save to local storage" />
+                                    <input id="loadLocal" type="button" value="Load from local storage" />
+                                    <input id="download" type="button" value="Download" />
+                                </td>
                             </tr>
                             <tr>
                                 <td><label for="width">Width: </label></td>
-                                <td><input class="dim" type="number" id="width" value="20" /></td>
+                                <td><input class="dim" type="number" id="width" value="40" /></td>
+                                <td rowspan="2"><input id="recreate" type="button" value="Resize" /></td>
                             </tr>
                             <tr>
                                 <td><label for="height">Height: </label></td>
                                 <td><input class="dim" type="number" id="height" value="20" /></td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                <h3>Tiles</h3>
                 <div>
                     <select id="tile">
                     </select>
@@ -58,7 +69,7 @@
                     </div>
                 </div>
                 <div>
-                    <input id="export" type="button" value="Export">
+
                 </div>
             </div>
         </div>
