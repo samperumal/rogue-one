@@ -26,23 +26,27 @@ div.hidden-edit {
 }
 
 #tiles div.tile {
+    vertical-align: middle;
     text-align: left;
+    padding-left: 0.5em;
+    padding-top: 0.3em;    
+    border: 1px solid brown;
+    border-radius: 5px;
+
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
 }
 
 #tiles div.tile:hover {
     color: black;
     background-color: white;
+    cursor: pointer;
 }
 
 #tiles div.tile.selected {
     font-weight: bold;
     color: black;
     background-color: white;
-}
-
-select, option {    
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: bold;
 }
 
 .settings table {
