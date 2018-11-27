@@ -421,7 +421,12 @@ export function healPlayer(value){
 function dispatchEvent(event) {
     for (const key in gameState.player.equippedItems) {
         const item = gameState.player.equippedItems[key];
-        if (item && item.applyEffect)
-            item.applyEffect(event,gameState);
+        if (item && item.modifiers)
+        {
+            for (const modifier of item.modifiers)
+            {
+                modifier.apply(event,gameState);
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
-export { loadMap, Cell, TILES, key, baseArmour, bucketHelm, weapon };
 import {addArmour, addDamage,setVisualRange, healPlayer, info} from "./game.js";
+import * as Modifiers from "./modifiers.js";
 
-async function loadMap(url) {
+export async function loadMap(url) {
     const downloads = [d3.text(url + ".txt"), d3.json(url + ".json")];
     const [mapText, mapJson] = await Promise.all(downloads);
     return parseMap(mapText, mapJson);
@@ -123,20 +123,22 @@ class weapon {
     constructor() {
         this.name = "unidentified";
         this.damage = 0;
+        this.modifiers= [
+            {
+                apply: event=> {
+                    switch (event.type) {
+                        case "turnStart": addDamage(this.damage);
+                        default: return;
+                    }
+                }
+            }
+        ]
     }
-
     t() {
         return "/";
     }
     tt() {
         return "weapon (" + this.name + ")";
-    }
-
-    applyEffect(event) {
-        switch (event.type) {
-        case "turnStart": addDamage(this.damage);
-        default: return;
-        }
     }
 }
 
@@ -145,6 +147,16 @@ class baseArmour {
         this.type = "base_armor";
         this.name = "unidentified";
         this.armour = 0;
+        this.modifiers = [
+            {
+                apply: event=> {
+                    switch (event.type) {
+                        case "turnStart": return addArmour(this.armour);
+                        default: return;
+                    }
+                }
+            }
+        ]
     }
 
     t() {
@@ -152,13 +164,6 @@ class baseArmour {
     }
     tt() {
         return "armour (" + this.name + ")";
-    }
-
-    applyEffect(event) {
-        switch (event.type) {
-        case "turnStart": return addArmour(this.armour);
-        default: return;
-        }
     }
 }
 
@@ -168,6 +173,10 @@ class bucketHelm {
         this.type = "bucket_helm";
         this.name = "";
         this.armour = 0;
+        this.modifiers = [
+            Modifiers.blind(),
+            Modifiers.armour(5)
+        ]
     }
 
     t() {
@@ -177,42 +186,75 @@ class bucketHelm {
         return "armour (" + this.name + ")";
     }
 
-    applyEffect(event) {
-        switch (event.type) {
-        case "turnStart": 
-            setVisualRange(0);
-            addArmour(this.armour);
-        break;
-        default: return;
-    }}
 }
 
+// Paper Armor: armor the gets weaker each time you are hit
+// Example of the benefits of storing state in the item
+/*
+class paperArmour {
+//    armor= 10;
+    applyEffect(event) {
+        switch (event.type) {
+        case "turnStart": return addArmour(this.armour);
+        case "monsterHitsPlayer":  this.armor-=1;
+        default: return;
+        }
+    }
+}
+*/
+
 // Varpire Cloak : Applies life steal when the player damages a monster
-// (as an example of equipment applying it's effect on different game events)
+// and example of a hand-written unique item who's effects will not be 
+// generated randomly
 class vampireCloak {
     constructor() {
         this.type = "vampire_cloak";
         this.name = "Cloak of the Vampire";
         this.armour = 0;
+        this.modifiers = [
+            {
+        // apply the effects that occur while this item is equipped
+            apply(event) {
+            switch (event.type) {
+            case "playerDamagesMonster":  // When the player damages a monster
+                info("You suck "+event.damage+" health from the monster"); 
+                healPlayer(event.damage); // Heal the player
+            break;
+            case "playerQuaffsPotion":
+                if (event.potion.flavour=="garlic") {
+                    info("It Burns!");
+                    damagePlayer(10)
+                }
+            break;
+            case "monsterHitsPlayer":
+                if (event.monster.weapon.material=="silver")
+                {
+                    info("Isn't this for werewolves?");
+                    damagePlayer(10);
+                }
+            break
+            case "playerVictory":
+                info("You climb unsteadily from the dungon,");
+                info("Death Star Plans clutched victoriously in your hands");
+                info("The morning sun rises, above the distant hills");
+                info("and burns you to ash");
+                killPlayer();
+            break;
+            default: return;
+        }
+        }
+    }];
     }
 
-    t() {
-        return "▾";
-    }
-    tt() {
-        return "armour (" + this.name + ")";
-    }
-
-    // apply the effects that occur while this item is equipped
-    applyEffect(event) {
-        switch (event.type) {
-        case "playerDamagesMonster":  // When the player damages a monster
-            info("You suck "+event.damage+" health from the monster"); 
-            healPlayer(event.damage); // Heal the player
-        break;
-        default: return;
-    }}
+        t() {
+            return "▾";
+        }
+        tt() {
+            return "armour (" + this.name + ")";
+        }
 }
+
+const constructAndAssign = c => data => Object.assign(new (c)(),data);
 
 // Known tile types
 const TILES = {
@@ -220,25 +262,25 @@ const TILES = {
     "": { tt: "rock" },
     "#": { tt: "wall" },
     ".": { tt: "floor" },
-    "*": { tt: "gold", proto: _ => new gold() },
-    "¬": { tt: "key", proto: _ => new key() },
-    õ: { tt: "potion", proto: _ => new potion() },
+    "*": { tt: "gold", factory: constructAndAssign(gold) },
+    "¬": { tt: "key", factory: constructAndAssign(key) },
+    õ: { tt: "potion", factory: constructAndAssign(potion) },
     "▾": {
         tt: "armour",
-        proto: (/** @type {baseArmour | bucketHelm} */ v) => {
+        factory: (/** @type {baseArmour | bucketHelm} */ v) => {
             switch (v.type) {
                 case "bucket_helm":
-                    return new bucketHelm();
+                    return constructAndAssign(bucketHelm)(v);
                 case "vampire_cloak":
-                    return new vampireCloak();
+                    return constructAndAssign(vampireCloak)(v);
                 default:
-                    return new baseArmour();
+                    return constructAndAssign(baseArmour)(v);
             }
         }
     },
-    "/": { tt: "weapon", proto: _ => new weapon() },
-    "+": { tt: "door", proto: _ => new door() },
-    "☻": { tt: "monster", proto: () => new monster() }
+    "/": { tt: "weapon", factory: constructAndAssign(weapon) },
+    "+": { tt: "door", factory: constructAndAssign(door) },
+    "☻": { tt: "monster", factory: constructAndAssign(monster) }
 };
 
 function parseMap(d, itemDefinitions) {
@@ -270,6 +312,7 @@ function parseMap(d, itemDefinitions) {
     // definition in the json file.
     function parseCell(c, itemDefinitions, x, y) {
         const cell = new Cell(x, y);
+        var itemDefinition = null
 
         // Override tile symbol for parsing if player
         if (c == "@") {
@@ -281,18 +324,24 @@ function parseMap(d, itemDefinitions) {
         else if (itemDefinitions != null && itemDefinitions[c] != null) {
             for (const item of itemDefinitions[c]) {
                 if (item.x == cell.x && item.y == cell.y) {
+                    itemDefinition= item;
                     cell.i = item;
                 }
             }
+            if (itemDefinition.type=="base_armour")
+                debugger;
 
-            if (cell.i == null) {
+            if (itemDefinition == null) {
                 console.log("No definition found: ", cell, c);
                 // Create default if none exists
                 cell.i = {};
             }
+            else
+            {
+                if (TILES[c] && TILES[c].factory)
+                cell.i = TILES[c].factory(itemDefinition);
 
-            // Set data object class from TILES dictionary lookup
-            Object.setPrototypeOf(cell.i, TILES[c].proto(cell.i));
+            }
 
             // Override tile symbol for parsing if known
             c = ".";
