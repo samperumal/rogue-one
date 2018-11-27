@@ -22,39 +22,34 @@
         <div class="status-bar">
             <div>
                 <h3>Settings</h3>
-                <div class="settings">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td><label for="name">Name:</label></td>
-                                <td><input type="text" id="name"></td>
-                                <td><input id="showFileMgr" type="button" value="V"></td>
-                            </tr>
-                            <tr class="file-mgr">
-                                <td colspan="3">
-                                    <input id="saveLocal" type="button" value="Save to local storage" />
-                                    <input id="loadLocal" type="button" value="Load from local storage" />
-                                    <input id="download" type="button" value="Download" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label for="width">Width: </label></td>
-                                <td><input class="dim" type="number" id="width" value="40" /></td>
-                                <td rowspan="2"><input id="recreate" type="button" value="Resize" /></td>
-                            </tr>
-                            <tr>
-                                <td><label for="height">Height: </label></td>
-                                <td><input class="dim" type="number" id="height" value="20" /></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="settings">
+                    <div style="text-align: right;"><label for="name">Name:</label></div>
+                    <div style="text-align: left;"><input type="text" id="name"></div>                    
+                    <!-- <div><input id="download" type="button" value="Download" /></div> -->
+                    <div>
+                        <img id="saveLocal" src="img/save.png" class="file-icon" title="Save to local storage" />
+                        <img id="loadLocal" src="img/load.png" class="file-icon" title="Load from local storage" />
+                        <img id="download" src="img/download.png" class="file-icon" title="Download to local machine" />
+                    </div>
+
+                    <div style="text-align: right;"><label for="width">Width: </label></div>
+                    <div style="text-align: left;"><input class="dim" type="number" id="width" value="40" /></div>
+                    <div style="grid-row: span 2; margin-top: auto; margin-bottom: auto;"><input id="recreate" type="button" value="Resize" /></div>
+                    
+                    <div style="text-align: right;"><label for="height">Height: </label></div>
+                    <div style="text-align: left;"><input class="dim" type="number" id="height" value="20" /></div>
+
+                    
+
+                    <!-- <div><input id="saveLocal" type="button" value="Save to local storage" /></div> -->
+                    <!-- <div><input id="loadLocal" type="button" value="Load from local storage" /></div> -->
+                    
+                    
                 </div>
                 <h3>Tiles</h3>
-                <div>
-                    <select id="tile">
-                    </select>
+                <div id="tiles">
                 </div>
+                <h3>Properties</h3>
                 <div id="json-properties-div">
                     <pre id="json-properties">
 

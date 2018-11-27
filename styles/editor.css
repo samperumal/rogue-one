@@ -17,32 +17,55 @@ div.hidden-edit {
     margin: 1em;
 }
 
-#tile {
-    width: 90%;
-    margin: 1em;
+#tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(75px, auto));
+    grid-auto-rows: minmax(25px, 1fr);
+    column-gap: 5px;
+    row-gap: 5px;
 }
 
-select, option {    
+#tiles div.tile {
+    vertical-align: middle;
+    text-align: left;
+    padding-left: 0.5em;
+    padding-top: 0.3em;    
+    border: 1px solid brown;
+    border-radius: 5px;
+
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
 }
 
-.settings table {
-    width: auto;
-    margin: auto;
+#tiles div.tile:hover {
+    color: black;
+    background-color: white;
+    cursor: pointer;
 }
 
-.settings table td {
-    text-align: left;
+#tiles div.tile.selected {
+    font-weight: bold;
+    color: black;
+    background-color: white;
 }
 
-.settings input {
+#settings {
+    display: grid;
+    grid-template-columns: minmax(4em, 25%) minmax(auto, 25%) minmax(auto, 40%);
+    grid-auto-rows: minmax(25px, 1fr);
+    column-gap: 5px;
+    row-gap: 5px;
+}
+
+#settings input {
     width: 5em;
     padding-left: 3px;
 }
 
-.settings input.dim {
-    width: 3em;
+img.file-icon {
+    width: 30px; 
+    height: 30px;
+    cursor: pointer;
 }
 
 .cellbg {
@@ -53,18 +76,4 @@ select, option {
 
 .cellbg:hover {
     stroke: white;
-}
-
-tr.file-mgr td {
-    text-align: center;
-}
-
-.file-mgr input {    
-    margin: 0.5em 0;
-    width: auto;    
-    display: none;    
-}
-
-.file-mgr  {
-    background-color: darkolivegreen;
 }
