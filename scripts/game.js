@@ -426,7 +426,9 @@ function displayModifiers(){
         {
             for (const modifier of item.modifiers)
             {
-                div.append("div", ":last-child").attr("class", "info")
+                div.append("div", ":last-child")
+                .attr("class", "info")
+                .attr("title",`from ${item.name}`)
                     .text(modifier.name);
             }1
         }

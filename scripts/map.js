@@ -171,6 +171,7 @@ class vampireCloak {
         this.armour = 0;
         this.modifiers = [
             {
+                name: "Life Steal",
         // apply the effects that occur while this item is equipped
             apply(event) {
             switch (event.type) {
