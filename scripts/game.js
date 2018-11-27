@@ -186,6 +186,7 @@ function update() {
     gfx.damage.text(gameState.player.stats.damage);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
+    displayModifiers();
 }
 
 const stepDistanceBetween = (sourcePoint, destinationPoint) => Math.abs(destinationPoint.x - sourcePoint.x) + Math.abs(destinationPoint.y - sourcePoint.y);
@@ -415,6 +416,21 @@ export function setVisualRange(value){
 export function healPlayer(value){
     gameState.player.health+=value;
     dispatchEvent(Events.playerHealed(value));
+}
+
+function displayModifiers(){
+    var div = d3.select("#modifiers").html("");
+    for (const key in gameState.player.equippedItems) {
+        const item = gameState.player.equippedItems[key];
+        if (item && item.modifiers)
+        {
+            for (const modifier of item.modifiers)
+            {
+                div.append("div", ":last-child").attr("class", "info")
+                    .text(modifier.name);
+            }1
+        }
+    }
 }
 
 // dispatch event to all equipment

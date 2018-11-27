@@ -10,7 +10,7 @@ export const modifierFactory = (type, config) => {
 }
 
 export const armour = value => ({
-    name: "+Armour",
+    name: `+${value} Armour`,
     apply: event=> {
         switch (event.type) {
         case "turnStart": addArmour(value);
@@ -20,7 +20,7 @@ export const armour = value => ({
 });
 
 export const damage = value => ({
-    name: "+ Damage",
+    name: `+${value} Damage`,
     apply: event => {
         switch (event.type) {
         case "turnStart": addDamage(value);
