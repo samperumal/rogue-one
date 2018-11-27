@@ -447,7 +447,9 @@ function dispatchEvent(event) {
         {
             for (const modifier of item.modifiers)
             {
-                var result = modifier.apply(event,gameState);
+                var handler = modifier.apply[event.type];
+                if (!handler) continue;
+                var result = handler(event,gameState);
                 vetoApplied = vetoApplied || result===Events.veto;
             }
         }

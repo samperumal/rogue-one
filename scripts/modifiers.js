@@ -14,55 +14,42 @@ export const modifierFactory = (type, config, parent) => {
 
 export const armour = value => ({
     name: `+${value} Armour`,
-    apply: event=> {
-        switch (event.type) {
-        case "turnStart": addArmour(value);
-        default: return;
-        }
+    apply: {
+        turnStart: _=>addArmour(value)
     }
 });
 
 export const damage = value => ({
     name: `+${value} Damage`,
-    apply: event => {
-        switch (event.type) {
-        case "turnStart": addDamage(value);
-        default: return;
-        }
-    }
+    apply: {
+        turnStart: _=>addDamage(value)
+       }
 });
 
 export const blind = ()=> ({
     name:"Blind",
-    apply: event => {
-        switch (event.type) {
-        case "turnStart": 
-            setVisualRange(0);
-        break;
-        default: return;
-    }}
+    apply: {
+        turnStart: _=>setVisualRange(0)
+    }
 });
 
 export const cursed = (item)=> ({
     name:`Cursed (${item.name})`,
-    apply: event => {
-        switch (event.type) {
-        case "unequip": 
+    apply: {
+        unequip: event => {
             if (event.item===item)
             {
                 info(`You try to pull the ${item.name} off, but it is stuck fast`);
                 return veto;
             }
-        break;
-        default: return;
-    }}
+        }
+    }
 });
 
 export const chanceToMiss = (percentage, weapon) => ({
     name: `${percentage}% chance to miss`,
-    apply: event => {
-        switch (event.type) {
-        case "playerDamagesMonster": 
+    apply: {
+        playerDamagesMonster: event =>  {
             if (event.weapon===weapon)
             {
                 if (Math.random()*100 < percentage)
@@ -72,7 +59,6 @@ export const chanceToMiss = (percentage, weapon) => ({
                     return veto;
                 }
             }
-        break;
-        default: return;
-    }}
+        }
+    }
 });

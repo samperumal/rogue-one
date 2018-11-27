@@ -173,35 +173,12 @@ class vampireCloak {
             {
                 name: "Life Steal",
         // apply the effects that occur while this item is equipped
-            apply(event) {
-            switch (event.type) {
-            case "playerDamagesMonster":  // When the player damages a monster
+            apply: {
+            // When the player damages a monster
+            playerDamagesMonster: event=>{
                 info("You suck "+event.damage+" health from the monster"); 
                 healPlayer(event.damage); // Heal the player
-            break;
-            case "playerQuaffsPotion":
-                if (event.potion.flavour=="garlic") {
-                    info("It Burns!");
-                    damagePlayer(10)
-                }
-            break;
-            case "monsterHitsPlayer":
-                if (event.monster.weapon.material=="silver")
-                {
-                    info("Isn't this for werewolves?");
-                    damagePlayer(10);
-                }
-            break
-            case "playerVictory":
-                info("You climb unsteadily from the dungon,");
-                info("Death Star Plans clutched victoriously in your hands");
-                info("The morning sun rises, above the distant hills");
-                info("and burns you to ash");
-                killPlayer();
-            break;
-            default: return;
-        }
-        }
+            }}
     }];
     }
 
