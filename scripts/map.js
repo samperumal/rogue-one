@@ -220,7 +220,7 @@ const constructAndAssign = c => data => {
         item.modifiers=[];
         for (var name in data.modifiers )
         {
-            item.modifiers.push(Modifiers.modifierFactory(name, data.modifiers[name]));
+            item.modifiers.push(Modifiers.modifierFactory(name, data.modifiers[name], item));
         }
     }
     return item;

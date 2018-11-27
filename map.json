@@ -17,7 +17,10 @@
     ],
     "/": [
         { "x": 8, "y": 3, "name": "spiked club", "modifiers":{"damage": 4 }},
-        { "x": 24, "y": 11, "name": "rat on a stick", "modifiers":{"damage": 2} }
+        { "x": 24, "y": 11, "name": "rat on a stick", "modifiers":
+            {"damage": 2,
+             "chanceToMiss":50
+            } }
     ],
     "▾": [
         { "x": 21, "y": 15, "name": "rags", "modifiers":{"armour": 1 }},
@@ -27,7 +30,8 @@
             "name": "cursed +1 bucket: helm of limited visibility",
             "modifiers": {
                 "armour":10,
-                "blind":1
+                "blind":1,
+                "cursed":true
             }
         },
         { "x": 20, "y": 11,

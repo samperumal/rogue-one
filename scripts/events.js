@@ -2,14 +2,18 @@
 // These provide an entry point for equipment, status effetcs etc.
 // to apply their changes to the game logic
 
+// returning veto from any event handler will prevent the event from happening
+export const veto = new Object();
+
 export const turnStart = () => ({
         type: "turnStart"
     });
 
-export const playerDamagesMonster = (monster, damage) => ({
+export const playerDamagesMonster = (monster, damage, weapon) => ({
     type:"playerDamagesMonster",
     monster: monster,
-    damage: damage
+    damage: damage,
+    weapon: weapon
 });
 
 export const turnEnd = () => ({
@@ -18,5 +22,10 @@ export const turnEnd = () => ({
 
 export const playerHealed = value => ({
     type:"playerHealed",
-    valeu: value
+    value: value
+});
+
+export const unequip = item => ({
+    type:"unequip",
+    item: item
 });

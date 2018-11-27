@@ -340,12 +340,13 @@ function hitMonster(currentCell, proposedCell) {
 
     //  Monster is definitely still alive...
     var damage = proposedCell.i.effectiveDamage(gameState.player.stats.damage);
-    dispatchEvent(Events.playerDamagesMonster(proposedCell.i,damage));
+    if (dispatchEvent(Events.playerDamagesMonster(proposedCell.i,damage, gameState.player.equippedItems.weapon))) 
+    {
+        proposedCell.i.takeDamage(gameState.player.stats.damage);
 
-    proposedCell.i.takeDamage(gameState.player.stats.damage);
-
-    info("You hit the monster, doing " + (monsterHealth - proposedCell.i.health) + " damage.  " +
-        "(" + proposedCell.i.tt() + ": " + proposedCell.i.health + " remaining)");
+        info("You hit the monster, doing " + (monsterHealth - proposedCell.i.health) + " damage.  " +
+            "(" + proposedCell.i.tt() + ": " + proposedCell.i.health + " remaining)");
+    }
 
     if (proposedCell.i.isDead()) {
         info("You slay the monster!");
@@ -388,6 +389,8 @@ function pickupItem(currentCell, proposedCell) {
 function equipArmour(newArmour) {
     var oldArmour = gameState.player.equippedItems.armour;
     //if (oldArmour == null || newArmour.armour > oldArmour.armour) {
+        if (!dispatchEvent(Events.unequip(oldArmour))) return;
+
         gameState.player.equippedItems.armour = newArmour;
         info("You have equipped the " + newArmour.name);
     //}
@@ -437,14 +440,17 @@ function displayModifiers(){
 
 // dispatch event to all equipment
 function dispatchEvent(event) {
+    var vetoApplied = false;
     for (const key in gameState.player.equippedItems) {
         const item = gameState.player.equippedItems[key];
         if (item && item.modifiers)
         {
             for (const modifier of item.modifiers)
             {
-                modifier.apply(event,gameState);
+                var result = modifier.apply(event,gameState);
+                vetoApplied = vetoApplied || result===Events.veto;
             }
         }
     }
+    return !vetoApplied;
 }
