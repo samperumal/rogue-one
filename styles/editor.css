@@ -49,22 +49,23 @@ div.hidden-edit {
     background-color: white;
 }
 
-.settings table {
-    width: auto;
-    margin: auto;
+#settings {
+    display: grid;
+    grid-template-columns: minmax(4em, 25%) minmax(auto, 25%) minmax(auto, 40%);
+    grid-auto-rows: minmax(25px, 1fr);
+    column-gap: 5px;
+    row-gap: 5px;
 }
 
-.settings table td {
-    text-align: left;
-}
-
-.settings input {
+#settings input {
     width: 5em;
     padding-left: 3px;
 }
 
-.settings input.dim {
-    width: 3em;
+img.file-icon {
+    width: 30px; 
+    height: 30px;
+    cursor: pointer;
 }
 
 .cellbg {
@@ -75,18 +76,4 @@ div.hidden-edit {
 
 .cellbg:hover {
     stroke: white;
-}
-
-tr.file-mgr td {
-    text-align: center;
-}
-
-.file-mgr input {    
-    margin: 0.5em 0;
-    width: auto;    
-    display: none;    
-}
-
-.file-mgr  {
-    background-color: darkolivegreen;
 }

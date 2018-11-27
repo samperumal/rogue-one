@@ -53,7 +53,6 @@ class editor {
                 editor.name = this.value;
             });
 
-        d3.select("#showFileMgr").on("click", this.showFileMgr.bind(this));
         d3.select("#saveLocal").on("click", this.saveLocal.bind(this));
         d3.select("#loadLocal").on("click", this.loadLocal.bind(this));
         d3.select("#download").on("click", this.download.bind(this));
@@ -207,10 +206,6 @@ class editor {
         d3.select("#json-edit-div").classed("hidden-edit", true);
 
         this.updateGrid();
-    }
-
-    showFileMgr() {
-        d3.selectAll(".file-mgr input").style("display", "inherit");
     }
 
     saveLocal() {
