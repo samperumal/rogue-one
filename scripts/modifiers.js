@@ -1,5 +1,14 @@
 import { addArmour, addDamage, setVisualRange } from "./game.js";
 
+export const modifierFactory = (type, config) => {
+    switch (type) {
+        case "armour": return armour(config);
+        case "damage": return damage(config);
+        case "blind": return blind();
+        default: throw new Error("Unknown modifier "+type);
+    }
+}
+
 export const armour = value => ({
     name: "+Armour",
     apply: event=> {

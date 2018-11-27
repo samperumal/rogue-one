@@ -122,17 +122,6 @@ class potion {
 class weapon {
     constructor() {
         this.name = "unidentified";
-        this.damage = 0;
-        this.modifiers= [
-            {
-                apply: event=> {
-                    switch (event.type) {
-                        case "turnStart": addDamage(this.damage);
-                        default: return;
-                    }
-                }
-            }
-        ]
     }
     t() {
         return "/";
@@ -146,17 +135,6 @@ class baseArmour {
     constructor() {
         this.type = "base_armor";
         this.name = "unidentified";
-        this.armour = 0;
-        this.modifiers = [
-            {
-                apply: event=> {
-                    switch (event.type) {
-                        case "turnStart": return addArmour(this.armour);
-                        default: return;
-                    }
-                }
-            }
-        ]
     }
 
     t() {
@@ -167,26 +145,6 @@ class baseArmour {
     }
 }
 
-
-class bucketHelm {
-    constructor() {
-        this.type = "bucket_helm";
-        this.name = "";
-        this.armour = 0;
-        this.modifiers = [
-            Modifiers.blind(),
-            Modifiers.armour(5)
-        ]
-    }
-
-    t() {
-        return "▾";
-    }
-    tt() {
-        return "armour (" + this.name + ")";
-    }
-
-}
 
 // Paper Armor: armor the gets weaker each time you are hit
 // Example of the benefits of storing state in the item
@@ -254,7 +212,18 @@ class vampireCloak {
         }
 }
 
-const constructAndAssign = c => data => Object.assign(new (c)(),data);
+const constructAndAssign = c => data => { 
+    var item = Object.assign(new (c)(),data);
+    if (data.modifiers)
+    {
+        item.modifiers=[];
+        for (var name in data.modifiers )
+        {
+            item.modifiers.push(Modifiers.modifierFactory(name, data.modifiers[name]));
+        }
+    }
+    return item;
+}
 
 // Known tile types
 const TILES = {
@@ -269,8 +238,6 @@ const TILES = {
         tt: "armour",
         factory: (/** @type {baseArmour | bucketHelm} */ v) => {
             switch (v.type) {
-                case "bucket_helm":
-                    return constructAndAssign(bucketHelm)(v);
                 case "vampire_cloak":
                     return constructAndAssign(vampireCloak)(v);
                 default:
