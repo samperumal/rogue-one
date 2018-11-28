@@ -4,6 +4,10 @@ g.cell {
     fill: black;
 }
 
+text {
+    fill: white;
+}
+
 text.player {
     fill: magenta;
     font-weight: bolder;
