@@ -1,15 +1,11 @@
+import * as T from "./consts.js";
 import "./map.js";
 import { gfx } from "./gfx.js";
+import { initialise as initialiseEquipAction } from "./equip.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     run();
 });
-
-const Tplayer = "player";
-const Tblocked = "blocked";
-const Tlock = "lock";
-const Tkey = "key";
-const Tpickup = "pickup";
 
 class cgame {
     constructor() {
@@ -18,7 +14,7 @@ class cgame {
             symbol: "@",
             name: "player",
             space: null,
-            tags: [Tplayer],
+            tags: [T.player, T.entity],
             inventory: []
         };
 
@@ -31,6 +27,8 @@ class cgame {
                 "move": [attack, pickup, unlock, move],
             }
         };
+
+        initialiseEquipAction(this.actions.player);
     }
 
     initialise() {
@@ -56,14 +54,29 @@ class cgame {
     }
 }
 
+// #### Custom functions
+
 const function_lookup = {
     "key_master": key_master,
+    "key_colour": key_colour,
 }
 
 function key_master(key, lock) {
-    if (lock.tags != null && lock.tags.includes(Tblocked))
-        lock.tags.splice(lock.tags.indexOf(Tblocked), 1);
+    if (lock.tags != null && lock.tags.includes(T.blocked))
+    {
+        lock.tags.splice(lock.tags.indexOf(T.blocked), 1);
+        console.log("Unlocked with master key");
+    }
 }
+
+function key_colour(key, lock) {
+    if (lock.tags != null && lock.tags.includes(T.blocked) && key.colour == lock.colour) {
+        lock.tags.splice(lock.tags.indexOf(T.blocked), 1);
+        console.log("Unlocked with " + key.colour + " key");
+    }
+}
+
+// ### Core action functions
 
 function spawn(player, target, start, end) {
     if (start != null) {
@@ -87,8 +100,8 @@ function attack(source, target, start, end) {
 
 function unlock(source, target, start, end) {
     // Try unlocking structures first
-    if (end.structure.tags.includes(Tlock) && end.structure.tags.includes(Tblocked)) {
-        for (const key of source.inventory.filter(d => d.tags.includes(Tkey))) {
+    if (end.structure.tags.includes(T.lock) && end.structure.tags.includes(T.blocked)) {
+        for (const key of source.inventory.filter(d => d.tags.includes(T.key))) {
             console.log("Trying ", key);
             if (key.functions != null && key.functions["unlock"] != null) {
                 function_lookup[key.functions["unlock"]](key, end.structure);
@@ -109,7 +122,7 @@ function pickup(source, target, start, end) {
         throw "Source does not have an inventory to pickup item";
     }
     else for (const item of end.items) {
-        if (item.tags == null || !item.tags.includes(Tpickup)) {
+        if (item.tags == null || !item.tags.includes(T.pickup)) {
             console.log("Not pickup-able", item);
         }
         else {
@@ -132,7 +145,7 @@ function move(source, target, start, end) {
         console.error(end);
         throw "End is not empty";
     }
-    else if (end.structure.tags.includes(Tblocked)) {
+    else if (end.structure.tags.includes(T.blocked)) {
         //console.error(end.structure);
         console.log("Blocked", end.structure);
         return false;
@@ -151,6 +164,8 @@ function move(source, target, start, end) {
 
     return false;
 }
+
+// ### Test Code
 
 var game = new cgame;
 
@@ -179,12 +194,17 @@ function run() {
         _ => game.act("player", "move", game.player, null, game.player.space, game.mapData[1][1]),
 
         // Move player onto unlocked door
+        _ => game.act("player", "move", game.player, null, game.player.space, game.mapData[1][2]),
+        _ => game.act("player", "move", game.player, null, game.player.space, game.mapData[1][1]),
 
         // Move player onto sword A
+        _ => game.act("player", "move", game.player, null, game.player.space, game.mapData[2][1]),
 
         // Equip sword A
+        _ => game.act("player", "equip", game.player, game.player.inventory[1], game.player.space, null),
 
         // Mover player onto sword B
+        _ => game.act("player", "move", game.player, null, game.player.space, game.mapData[3][1]),
 
         // Attack adjacent monster
 
@@ -216,11 +236,13 @@ function run() {
             testActions[i]();
             game.update();
 
-            setTimeout(_ => r(i + 1), 200);
+            setTimeout(_ => r(i + 1), 10);
         }
         else {
             console.log("Done!");
             logMap(game.mapData);
+            console.log(game.player);
+            console.log(game.player.inventory);
         }
     }
 
@@ -259,7 +281,7 @@ function s_wall(space, params) {
     structure(space, {
         symbol: "#",
         name: "wall",
-        tags: [Tblocked]
+        tags: [T.blocked]
     });
 }
 
@@ -285,16 +307,32 @@ function loadMap() {
     structure(mapData[1][1], {
         symbol: "+",
         name: "door",
-        tags: [Tblocked, Tlock]
+        tags: [T.blocked, T.lock],
+        colour: "red"
     });
     s_floor(mapData[1][3]);
     item(mapData[1][3], {
         name: "key",
         symbol: "¬",
-        tags: [Tkey, Tpickup],
+        tags: [T.key, T.pickup],
         functions: {
-            "unlock": "key_master"
-        }
+            "unlock": "key_colour"
+        },
+        colour: "red"
+    });
+    s_floor(mapData[2][1]);
+    item(mapData[2][1], {
+        name: "sword of swordliness",
+        symbol: "/",
+        tags: [T.pickup, T.weapon],
+
+    });
+    s_floor(mapData[3][1]);
+    item(mapData[3][1], {
+        name: "ferocious needle",
+        symbol: "/",
+        tags: [T.pickup, T.weapon],
+
     });
 
     let mapArray = mapData.reduce((a, b) => a.concat(b), []);
@@ -303,11 +341,11 @@ function loadMap() {
 }
 
 function logMap(mapData) {
-    for (const x of mapData) {
-        for (const y of x)
-            if (y.structure.symbol != null || y.entities.length > 0)
-                console.log(y.x, y.y, y.structure, y.entities[0], y.entities, y.items);
-    }
+    // for (const x of mapData) {
+    //     for (const y of x)
+    //         if (y.structure.symbol != null || y.entities.length > 0)
+    //             console.log(y.x, y.y, y.structure, y.entities[0], y.entities, y.items);
+    // }
 
     console.log(mapData);
 }

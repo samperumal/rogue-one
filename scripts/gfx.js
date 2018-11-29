@@ -21,9 +21,15 @@ class gfx {
                 return data.items[0].symbol;
             else if (data.structure == null)
                 return "X";
-            //else if (data.structure.symbol != null)
-                return data.structure.symbol;
-            //else return "`";
+            else if (data.structure.symbol == null)
+                return "[" + data.x + "][" + data.y + "]";
+            else return data.structure.symbol;
+        }
+
+        this.css = function(data) {
+            if (data.structure.symbol == null)
+                return "coord";
+            else return null;
         }
     }
 
@@ -56,7 +62,7 @@ class gfx {
     update(center) {
         // Update cell css class and text symbol
         this.floor.selectAll("g.cell text")
-            //.attr("class", d => d.css())
+            .attr("class", this.css)
             .text(this.symbol);
 
         //this.floor.attr("transform", "translate(" + (-center.x * this.cellSize) + "," + (-center.y * this.cellSize) + ")");
