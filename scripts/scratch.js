@@ -15,7 +15,7 @@ class cgame {
             name: "player",
             space: null,
             tags: [T.player, T.entity],
-            inventory: []
+            inventory: [],
         };
 
         this.mapData = [];
@@ -95,7 +95,11 @@ function spawn(player, target, start, end) {
 }
 
 function attack(source, target, start, end) {
-
+    if (end.entities != null && end.entities.length > 0) {
+        console.log("You attack!");
+        return true; // Entity is still alive, stop further processing
+    }
+    else return false; // No entities to interact with
 }
 
 function unlock(source, target, start, end) {
@@ -207,6 +211,10 @@ function run() {
         _ => game.act("player", "move", game.player, null, game.player.space, game.mapData[3][1]),
 
         // Attack adjacent monster
+        _ => game.act("player", "move", game.player, null, game.player.space, game.mapData[3][0]),
+
+        // Monster attacks player
+        //_ => game.act("monster", "attack", game.mapData[3][0].entities[0], game.player, game.mapData[3][0], game.player.space),
 
         // Equip sword B
 
@@ -289,6 +297,10 @@ function item(space, params) {
     space.items.push(params);
 }
 
+function entity(space, params) {
+    space.entities.push(params);
+}
+
 // ### Utility functions
 
 function loadMap() {
@@ -325,7 +337,7 @@ function loadMap() {
         name: "sword of swordliness",
         symbol: "/",
         tags: [T.pickup, T.weapon],
-
+        damage: 1
     });
     s_floor(mapData[3][1]);
     item(mapData[3][1], {
@@ -333,6 +345,13 @@ function loadMap() {
         symbol: "/",
         tags: [T.pickup, T.weapon],
 
+    });
+    s_floor(mapData[3][0]);
+    entity(mapData[3][0], {
+        name: "bad monster",
+        symbol: "☻",
+        tags: [T.monster, T.entity, T.blocked],
+        health: 2
     });
 
     let mapArray = mapData.reduce((a, b) => a.concat(b), []);
