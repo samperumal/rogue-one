@@ -41,7 +41,7 @@
         }
     ],
     "õ": [
-        { "x": 21, "y":7, "colour": "green" }
+        { "x": 21, "y":7, "colour": "green", "quaffable":"true" }
     ],
     "☻": [
         { "x": 28, "y": 13, "colour": "darkTurquoise", "health": 10, "armour": 1, "damage": 1 },
