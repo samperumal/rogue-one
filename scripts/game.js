@@ -1,6 +1,7 @@
-import { loadMap, baseArmour, bucketHelm, weapon, key } from "./map.js";
+import { loadMap } from "./map.js";
 import { lineOfSightTest } from "./visibility.js";
 import { InputStateMachine, Rule } from "./input.js";
+import * as Events from "./events.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     initialise(loadMap("./map"));
@@ -161,11 +162,8 @@ function update() {
 
     // Update player stats
     Object.assign(gameState.player.stats, gameState.player.baseStats);
-    for (const key in gameState.player.equippedItems) {
-        const item = gameState.player.equippedItems[key];
-        if (item && item.applyEffect)
-            item.applyEffect(gameState.player.stats);
-    }
+
+    dispatchEvent(Events.turnStart());
 
     // Update cell css class and text symbol
     gfx.floor.selectAll("g.cell text")
@@ -188,6 +186,7 @@ function update() {
     gfx.damage.text(gameState.player.stats.damage);
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
+    displayModifiers();
 }
 
 const stepDistanceBetween = (sourcePoint, destinationPoint) => Math.abs(destinationPoint.x - sourcePoint.x) + Math.abs(destinationPoint.y - sourcePoint.y);
@@ -268,7 +267,7 @@ function error(msg) {
     d3.select("#log").insert("div", ":first-child").attr("class", "error").text(msg);
 }
 
-function info(msg) {
+export function info(msg) {
     d3.select("#log").insert("div", ":first-child").attr("class", "info").text(msg);
 }
 
@@ -339,10 +338,14 @@ function hitMonster(currentCell, proposedCell) {
         return moveToSpace(currentCell, proposedCell);
 
     //  Monster is definitely still alive...
-    proposedCell.i.takeDamage(gameState.player.stats.damage);
+    var damage = proposedCell.i.effectiveDamage(gameState.player.stats.damage);
+    if (dispatchEvent(Events.playerDamagesMonster(proposedCell.i,damage, gameState.player.equippedItems.weapon))) 
+    {
+        proposedCell.i.takeDamage(gameState.player.stats.damage);
 
-    info("You hit the monster, doing " + (monsterHealth - proposedCell.i.health) + " damage.  " +
-        "(" + proposedCell.i.tt() + ": " + proposedCell.i.health + " remaining)");
+        info("You hit the monster, doing " + (monsterHealth - proposedCell.i.health) + " damage.  " +
+            "(" + proposedCell.i.tt() + ": " + proposedCell.i.health + " remaining)");
+    }
 
     if (proposedCell.i.isDead()) {
         info("You slay the monster!");
@@ -385,6 +388,8 @@ function pickupItem(currentCell, proposedCell) {
 function equipArmour(newArmour) {
     var oldArmour = gameState.player.equippedItems.armour;
     //if (oldArmour == null || newArmour.armour > oldArmour.armour) {
+        if (!dispatchEvent(Events.unequip(oldArmour))) return;
+
         gameState.player.equippedItems.armour = newArmour;
         info("You have equipped the " + newArmour.name);
     //}
@@ -398,5 +403,57 @@ function equipWeapon(newWeapon) {
     }
 }
 
+export function addArmour(value){
+    gameState.player.stats.armour+=value;
+}
+
+export function addDamage(value){
+    gameState.player.stats.damage+=value;
+}
+
+export function setVisualRange(value){
+    gameState.player.stats.visualRange=value;
+}
+
+export function healPlayer(value){
+    gameState.player.health+=value;
+    dispatchEvent(Events.playerHealed(value));
+}
+
+function displayModifiers(){
+    var div = d3.select("#modifiers").html("");
+    for (const key in gameState.player.equippedItems) {
+        const item = gameState.player.equippedItems[key];
+        if (item && item.modifiers)
+        {
+            for (const modifier of item.modifiers)
+            {
+                div.append("div", ":last-child")
+                .attr("class", "info")
+                .attr("title",`from ${item.name}`)
+                    .text(modifier.name);
+            }1
+        }
+    }
+}
+
+// dispatch event to all equipment
+function dispatchEvent(event) {
+    var vetoApplied = false;
+    for (const key in gameState.player.equippedItems) {
+        const item = gameState.player.equippedItems[key];
+        if (item && item.modifiers)
+        {
+            for (const modifier of item.modifiers)
+            {
+                var handler = modifier.apply[event.type];
+                if (!handler) continue;
+                var result = handler(event,gameState);
+                vetoApplied = vetoApplied || result===Events.veto;
+            }
+        }
+    }
+    return !vetoApplied;
+}
 
 export const tileAt = (x,y)=> gameState.mapData[y][x];

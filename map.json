@@ -16,16 +16,28 @@
         { "y":15, "x": 30, "colour": "red" }
     ],
     "/": [
-        { "x": 8, "y": 3, "name": "spiked club", "damage": 4 },
-        { "x": 24, "y": 11, "name": "rat on a stick", "damage": 2 }
+        { "x": 8, "y": 3, "name": "spiked club", "modifiers":{"damage": 4 }},
+        { "x": 24, "y": 11, "name": "rat on a stick", "modifiers":
+            {"damage": 2,
+             "chanceToMiss":50
+            } }
     ],
     "▾": [
-        { "x": 21, "y": 15, "name": "rags", "armour": 1 },
-        { "x": 21, "y": 3, "name": "scale mail", "armour": 4 },
+        { "x": 21, "y": 15, "name": "rags", "modifiers":{"armour": 1 }},
+        { "x": 21, "y": 3, "name": "scale mail", "modifiers":{"armour": 4} },
         { "x": 21, "y": 14,
             "type": "bucket_helm",
             "name": "cursed +1 bucket: helm of limited visibility",
-            "armour":10 
+            "modifiers": {
+                "armour":10,
+                "blind":1,
+                "cursed":true
+            }
+        },
+        { "x": 20, "y": 11,
+            "type": "vampire_cloak",
+            "name": "Cloak of the Vampire",
+            "damage": 0
         }
     ],
     "õ": [

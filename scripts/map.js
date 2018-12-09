@@ -1,6 +1,7 @@
-export { loadMap, Cell, TILES, key, baseArmour, bucketHelm, weapon };
+import {addArmour, addDamage,setVisualRange, healPlayer, info} from "./game.js";
+import * as Modifiers from "./modifiers.js";
 
-async function loadMap(url) {
+export async function loadMap(url) {
     const downloads = [d3.text(url + ".txt"), d3.json(url + ".json")];
     const [mapText, mapJson] = await Promise.all(downloads);
     return parseMap(mapText, mapJson);
@@ -52,9 +53,13 @@ class monster {
         return this.colour + " blob";
     }
 
+    effectiveDamage(d){
+        var unblockedDamage = Math.max(1, d - this.armour); // Minimum damage of 1
+        return Math.min(d, this.health); // can't damage more than available health
+    }
+
     takeDamage(d) {
-        this.health -= Math.max(1, d - this.armour); // Minimum damage of 1
-        this.health = Math.max(0, this.health); // Non-negative health
+        this.health-=this.effectiveDamage(d);
         if (this.health <= 0) {
             this.colour = "dead";
         }
@@ -117,18 +122,12 @@ class potion {
 class weapon {
     constructor() {
         this.name = "unidentified";
-        this.damage = 0;
     }
-
     t() {
         return "/";
     }
     tt() {
         return "weapon (" + this.name + ")";
-    }
-
-    applyEffect(playerStats) {
-        playerStats.damage += this.damage;
     }
 }
 
@@ -136,7 +135,6 @@ class baseArmour {
     constructor() {
         this.type = "base_armor";
         this.name = "unidentified";
-        this.armour = 0;
     }
 
     t() {
@@ -144,31 +142,65 @@ class baseArmour {
     }
     tt() {
         return "armour (" + this.name + ")";
-    }
-
-    applyEffect(playerStats) {
-        playerStats.armour += this.armour;
     }
 }
 
-class bucketHelm {
+
+// Paper Armor: armor the gets weaker each time you are hit
+// Example of the benefits of storing state in the item
+/*
+class paperArmour {
+//    armor= 10;
+    applyEffect(event) {
+        switch (event.type) {
+        case "turnStart": return addArmour(this.armour);
+        case "monsterHitsPlayer":  this.armor-=1;
+        default: return;
+        }
+    }
+}
+*/
+
+// Varpire Cloak : Applies life steal when the player damages a monster
+// and example of a hand-written unique item who's effects will not be 
+// generated randomly
+class vampireCloak {
     constructor() {
-        this.type = "bucket_helm";
-        this.name = "";
+        this.type = "vampire_cloak";
+        this.name = "Cloak of the Vampire";
         this.armour = 0;
+        this.modifiers = [
+            {
+                name: "Life Steal",
+        // apply the effects that occur while this item is equipped
+            apply: {
+            // When the player damages a monster
+            playerDamagesMonster: event=>{
+                info("You suck "+event.damage+" health from the monster"); 
+                healPlayer(event.damage); // Heal the player
+            }}
+    }];
     }
 
-    t() {
-        return "▾";
-    }
-    tt() {
-        return "armour (" + this.name + ")";
-    }
+        t() {
+            return "▾";
+        }
+        tt() {
+            return "armour (" + this.name + ")";
+        }
+}
 
-    applyEffect(playerStats) {
-        playerStats.visualRange = 0;
-        playerStats.armour += this.armour;
+const constructAndAssign = c => data => { 
+    var item = Object.assign(new (c)(),data);
+    if (data.modifiers)
+    {
+        item.modifiers=[];
+        for (var name in data.modifiers )
+        {
+            item.modifiers.push(Modifiers.modifierFactory(name, data.modifiers[name], item));
+        }
     }
+    return item;
 }
 
 // Known tile types
@@ -177,23 +209,23 @@ const TILES = {
     "": { tt: "rock" },
     "#": { tt: "wall" },
     ".": { tt: "floor" },
-    "*": { tt: "gold", proto: _ => new gold() },
-    "¬": { tt: "key", proto: _ => new key() },
-    õ: { tt: "potion", proto: _ => new potion() },
+    "*": { tt: "gold", factory: constructAndAssign(gold) },
+    "¬": { tt: "key", factory: constructAndAssign(key) },
+    õ: { tt: "potion", factory: constructAndAssign(potion) },
     "▾": {
         tt: "armour",
-        proto: (/** @type {baseArmour | bucketHelm} */ v) => {
+        factory: (/** @type {baseArmour | bucketHelm} */ v) => {
             switch (v.type) {
-                case "bucket_helm":
-                    return new bucketHelm();
+                case "vampire_cloak":
+                    return constructAndAssign(vampireCloak)(v);
                 default:
-                    return new baseArmour();
+                    return constructAndAssign(baseArmour)(v);
             }
         }
     },
-    "/": { tt: "weapon", proto: _ => new weapon() },
-    "+": { tt: "door", proto: _ => new door() },
-    "☻": { tt: "monster", proto: () => new monster() }
+    "/": { tt: "weapon", factory: constructAndAssign(weapon) },
+    "+": { tt: "door", factory: constructAndAssign(door) },
+    "☻": { tt: "monster", factory: constructAndAssign(monster) }
 };
 
 export function parseMap(d, itemDefinitions) {
@@ -225,6 +257,8 @@ export function parseMap(d, itemDefinitions) {
     // definition in the json file.
     function parseCell(c, itemDefinitions, x, y) {
         const cell = new Cell(x, y);
+        var itemDefinition = null
+
         // Override tile symbol for parsing if player
         if (c == "@") {
             cell.p = true;
@@ -235,18 +269,24 @@ export function parseMap(d, itemDefinitions) {
         else if (itemDefinitions != null && itemDefinitions[c] != null) {
             for (const item of itemDefinitions[c]) {
                 if (item.x == cell.x && item.y == cell.y) {
+                    itemDefinition= item;
                     cell.i = item;
                 }
             }
+            if (itemDefinition.type=="base_armour")
+                debugger;
 
-            if (cell.i == null) {
+            if (itemDefinition == null) {
                 console.log("No definition found: ", cell, c);
                 // Create default if none exists
                 cell.i = {};
             }
+            else
+            {
+                if (TILES[c] && TILES[c].factory)
+                cell.i = TILES[c].factory(itemDefinition);
 
-            // Set data object class from TILES dictionary lookup
-            Object.setPrototypeOf(cell.i, TILES[c].proto(cell.i));
+            }
 
             // Override tile symbol for parsing if known
             c = ".";
