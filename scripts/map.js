@@ -196,7 +196,7 @@ const TILES = {
     "☻": { tt: "monster", proto: () => new monster() }
 };
 
-function parseMap(d, itemDefinitions) {
+export function parseMap(d, itemDefinitions) {
     console.log("Parsing");
 
     // Convert input text into array of arrays of characters (length 1 strings)
@@ -225,7 +225,6 @@ function parseMap(d, itemDefinitions) {
     // definition in the json file.
     function parseCell(c, itemDefinitions, x, y) {
         const cell = new Cell(x, y);
-
         // Override tile symbol for parsing if player
         if (c == "@") {
             cell.p = true;
