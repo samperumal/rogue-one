@@ -18,7 +18,8 @@ const circleIntersectsLine = line => circle => {
     return h2 <= radius * radius
 }
 
-const blocksLineOfSight = point => point.tt == "wall";
+const blocksLineOfSight = point => 
+    point.tt == "wall" || (point.i && point.i.open===false);
 
 const isBig = blocksLineOfSight
 

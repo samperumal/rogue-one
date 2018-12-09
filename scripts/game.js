@@ -4,10 +4,10 @@ import { InputStateMachine, Rule } from "./input.js";
 import * as Events from "./events.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-    initialise();
+    initialise(loadMap("./map"));
 });
 
-var gameState = {};
+export var gameState = {};
 var inputState = new InputStateMachine([
     new Rule(key => {
         switch (key) {
@@ -41,7 +41,7 @@ var inputState = new InputStateMachine([
 ]);
 
 // Called on game startup
-function initialise() {
+export function initialise(mapPromise) {
     // Setup global game state
     gameState = {
         // Display state
@@ -95,7 +95,7 @@ function initialise() {
         .attr("transform", "translate(" + (gameState.gfx.width / 2) + "," + (gameState.gfx.height / 2) + ")");
 
     // Call promise chain to load and draw map from file
-    loadMap("./map")
+    return mapPromise
         .then(map => {
             gameState = { ...gameState, ...map };
             const playerStart = map.mapArray.find(cell => cell.p);
@@ -107,7 +107,7 @@ function initialise() {
         .then(function () {
             // Attach general key listener
             d3.select('body')
-                .on("keydown", processInput)
+                .on("keydown", _=>processInput(d3.event.code))
                 .node()
                 .focus();
 
@@ -222,8 +222,7 @@ function updateLOS() {
 }
 
 // Process key input
-function processInput(d) {
-    const key = d3.event.code;
+export function processInput(key) {
     // Escape cancels any in-progress sequence.
     if (key === "Escape") {
         inputState.reset();
@@ -456,3 +455,5 @@ function dispatchEvent(event) {
     }
     return !vetoApplied;
 }
+
+export const tileAt = (x,y)=> gameState.mapData[y][x];

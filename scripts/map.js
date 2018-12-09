@@ -228,7 +228,7 @@ const TILES = {
     "☻": { tt: "monster", factory: constructAndAssign(monster) }
 };
 
-function parseMap(d, itemDefinitions) {
+export function parseMap(d, itemDefinitions) {
     console.log("Parsing");
 
     // Convert input text into array of arrays of characters (length 1 strings)
