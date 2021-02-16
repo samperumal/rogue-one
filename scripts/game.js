@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     initialise(loadMap("./map"));
 });
 
+window.gameState = ()=>gameState;
+
 export var gameState = {};
 var inputState = new InputStateMachine([
     new Rule(key => {
@@ -28,16 +30,26 @@ var inputState = new InputStateMachine([
     // TODO(antonburger): Remove; testing guff to demo a multi-key sequence with context
     new Rule("KeyQ", [
         new Rule(key => {
-            switch (key) {
-                case "Digit1": return 1;
-                case "Digit2": return 2;
-                case "Digit3": return 3;
-                default: return false;
+            try {
+                return parseInt(key.match("Digit([0-9])")[1]);
+            } catch (err) {
+                return false;
             }
         },
             [],
-            context => console.log("Quaffed potion " + context))
-    ])
+            context => { 
+                    var selected = inventory()[context-1];
+                    if (!selected) error("No such item");
+                    else quaff(selected)
+                }
+            )
+    ], _=>{
+        let infoText = ["What would you like to quaff?"];
+        let i = 1;
+        for (const item of inventory())
+            infoText.push(`${i++}: ${item.tt()}`)
+        infoText.reverse().forEach(info);
+    }),
 ]);
 
 // Called on game startup
@@ -187,6 +199,7 @@ function update() {
 
     gfx.floor.attr("transform", "translate(" + (-gameState.player.x * gfx.cellSize) + "," + (-gameState.player.y * gfx.cellSize) + ")");
     displayModifiers();
+    displayInventory();
 }
 
 const stepDistanceBetween = (sourcePoint, destinationPoint) => Math.abs(destinationPoint.x - sourcePoint.x) + Math.abs(destinationPoint.y - sourcePoint.y);
@@ -237,6 +250,17 @@ export function processInput(key) {
     }
 }
 
+function quaff(item){
+    if (inventory().indexOf(item)==-1) return error(`${item.tt()} is not in your inventory`);
+    if (!item.quaffable) return error("You can't drinkn that!");
+    info(`You drink the ${item.tt()}`);
+    removeFromInventory(item);
+}
+
+function removeFromInventory(item) {
+    gameState.player.items = gameState.player.items.filter(v=>v!=item);
+}
+
 // Attempt to move to new cell
 function requestMove(x, y) {
     var player = gameState.player;
@@ -271,10 +295,16 @@ export function info(msg) {
     d3.select("#log").insert("div", ":first-child").attr("class", "info").text(msg);
 }
 
-function update_inventory(item) {
+function displayInventory(){
+    const div =d3.select("#inventory");
+    div.html("");
+    for (const item of gameState.player.items)
+        div.append("div", ":last-child").attr("class", "info").text(item.tt());
+}
+
+function pickUp(item) {
     gameState.player.items.push(item);
-    d3.select("#inventory").append("div", ":last-child").attr("class", "info").text(item);
-    info("You picked up a " + item);
+    info("You picked up a " + item.tt());
 }
 
 var possibleDestinations = {
@@ -308,7 +338,7 @@ function moveToSpace(currentCell, proposedCell) {
 function moveThroughDoor(currentCell, proposedCell) {
     var door = proposedCell.i;
     if (!door.open) {
-        if (gameState.player.items.includes(door.colour + " key")) {
+        if (gameState.player.items.map(v=>v.tt()).includes(door.colour + " key")) {
             door.open = true;
             info("You opened a " + door.colour + " door.");
         }
@@ -368,7 +398,7 @@ function pickupItem(currentCell, proposedCell) {
     var newItem = proposedCell.i;
 
     if (!gameState.player.items.includes(newItem.tt())) {
-        update_inventory(newItem.tt());
+        pickUp(newItem);
         proposedCell.i = null;
 
         switch (newItem.t()) {
@@ -418,6 +448,10 @@ export function setVisualRange(value){
 export function healPlayer(value){
     gameState.player.health+=value;
     dispatchEvent(Events.playerHealed(value));
+}
+
+export function inventory(){
+    return gameState.player.items;
 }
 
 function displayModifiers(){
